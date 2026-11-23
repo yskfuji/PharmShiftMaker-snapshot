@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import sys
 from datetime import UTC, datetime, timedelta
 from typing import Any
 
@@ -340,6 +341,11 @@ def test_unknown_profile_name_stops_start_up(monkeypatch: pytest.MonkeyPatch) ->
 def desktop_env(monkeypatch: pytest.MonkeyPatch, tmp_path: Any) -> dict[str, str]:
     storage = tmp_path / "storage"
     storage.mkdir(mode=0o700)
+    if sys.platform == "win32":
+        # Windows: the protected user/SYSTEM/Administrators DACL of the data root.
+        from shift_scheduler.ops.platform_fs import prepare_data_dir
+
+        prepare_data_dir(str(storage))
     env = {
         "PHARMSHIFT_ENV": "desktop",
         "SHIFT_SCHEDULER_DATA_BACKEND": "db",
