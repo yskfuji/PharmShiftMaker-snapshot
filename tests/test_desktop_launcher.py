@@ -71,7 +71,7 @@ def test_secrets_created_once_and_owner_only(tmp_path: Path) -> None:
     assert set(first) == set(secrets.FIELDS)
     assert stat.S_IMODE(path.stat().st_mode) == 0o600
     assert secrets.load_or_create(path) == first
-    assert len(first["jwt_secret"]) >= 32 and len(first["setup_token"]) >= 32
+    assert len(first["jwt_secret"]) >= 32 and "setup_token" not in first
     assert len(bytes.fromhex(first["authority_private_key"])) == 32
 
 
@@ -105,14 +105,14 @@ def test_children_do_not_inherit_unlisted_variables(tmp_path: Path) -> None:
     data = DataLayout(tmp_path)
     secret = _secret()
     for env in (
-        environment.application(parent, secret, data),
+        environment.application(parent, secret, data, "t"),
         environment.control(parent, secret, data),
         environment.web(parent, data),
         environment.postgres(parent, secret),
     ):
         assert "AWS_SECRET_ACCESS_KEY" not in env
         assert env["PATH"] == "/bin"
-    assert environment.application(parent, secret, data)["DATABASE_URL"] != "other"
+    assert environment.application(parent, secret, data, "t")["DATABASE_URL"] != "other"
 
 
 def test_web_and_control_do_not_receive_application_secrets(tmp_path: Path) -> None:
@@ -121,8 +121,9 @@ def test_web_and_control_do_not_receive_application_secrets(tmp_path: Path) -> N
     control = environment.control({}, secret, data)
     for value in (
         secret["jwt_secret"],
-        secret["db_password"],
-        secret["setup_token"],
+        secret["app_db_password"],
+        secret["admin_db_password"],
+        "setup-token-value",
     ):
         assert value not in json.dumps(web)
     assert secret["jwt_secret"] not in json.dumps(control)
@@ -131,16 +132,20 @@ def test_web_and_control_do_not_receive_application_secrets(tmp_path: Path) -> N
 
 def test_application_and_control_use_separate_databases(tmp_path: Path) -> None:
     data, secret = DataLayout(tmp_path), _secret()
-    app_url = environment.application({}, secret, data)["DATABASE_URL"]
+    app_url = environment.application({}, secret, data, "t")["DATABASE_URL"]
     control_url = environment.control({}, secret, data)["PHARMSHIFT_AUTHORITY_DB_URL"]
-    assert app_url.endswith(f"/{layout.APP_DB}")
-    assert control_url.endswith(f"/{layout.CONTROL_DB}")
+    assert f"/{layout.APP_DB}?" in app_url and f"//{layout.APP_USER}:" in app_url
+    assert f"/{layout.CONTROL_DB}?" in control_url
+    assert f"//{layout.CONTROL_USER}:" in control_url
+    for url in (app_url, control_url):
+        assert url.endswith("?require_auth=scram-sha-256")
+        assert layout.ADMIN_USER not in url
     assert "control" in layout.CONTROL_DB and "control" not in layout.APP_DB
 
 
 def test_credentials_match_the_client_settings(tmp_path: Path) -> None:
     data, secret = DataLayout(tmp_path), _secret()
-    app = environment.application({}, secret, data)
+    app = environment.application({}, secret, data, "t")
     granted = json.loads(
         environment.control({}, secret, data)["PHARMSHIFT_AUTHORITY_CREDENTIALS"]
     )
@@ -157,7 +162,7 @@ def test_application_environment_passes_the_desktop_checks(
     data = DataLayout(root)
     data.storage.mkdir(parents=True, mode=0o700)
     os.chmod(data.storage, 0o700)
-    env = environment.application({}, _secret(), data)
+    env = environment.application({}, _secret(), data, "t" * 32)
     for key in list(os.environ):
         if key.startswith(("PHARMSHIFT_", "AUTH_", "API_", "FRONTEND_", "DATABASE_")):
             monkeypatch.delenv(key, raising=False)
@@ -188,3 +193,72 @@ def test_cert_lifetime_constants_are_sane() -> None:
     now = datetime.datetime.now(datetime.UTC)
     leaf = x509.load_pem_x509_certificate(tls.issue(now)[1])
     assert leaf.not_valid_before_utc <= now
+
+
+def test_each_database_admits_only_its_owner_role() -> None:
+    from shift_scheduler.desktop import launcher
+
+    rules = [line.split() for line in launcher.PG_HBA.splitlines()]
+    assert all(rule[0] == "host" and rule[3] == "127.0.0.1/32" for rule in rules)
+    assert all(rule[4] == "scram-sha-256" for rule in rules)
+    assert {(rule[1], rule[2]) for rule in rules} == {
+        (layout.APP_DB, layout.APP_USER),
+        (layout.CONTROL_DB, layout.CONTROL_USER),
+        ("postgres", layout.ADMIN_USER),
+    }
+
+
+def test_postgres_logs_exclude_statements_and_details() -> None:
+    from shift_scheduler.desktop import launcher
+
+    assert "log_min_error_statement = panic" in launcher.POSTGRES_CONF
+    assert "log_error_verbosity = terse" in launcher.POSTGRES_CONF
+    assert "unix_socket_directories = ''" in launcher.POSTGRES_CONF
+
+
+@posix_only
+def test_reap_previous_stops_only_processes_from_this_runtime(tmp_path: Path) -> None:
+    import subprocess
+    import time
+
+    from shift_scheduler.desktop import launcher
+
+    runtime = RuntimeLayout(tmp_path / "runtime-root")
+    data = DataLayout(tmp_path / "data")
+    data.state.mkdir(parents=True)
+    ours = subprocess.Popen(
+        [sys.executable, "-c", "import time; time.sleep(60)", str(runtime.root)]
+    )
+    other = subprocess.Popen([sys.executable, "-c", "import time; time.sleep(60)"])
+    try:
+        data.children.write_text(json.dumps([ours.pid, other.pid, "x", 1]))
+        time.sleep(0.3)
+        assert launcher.reap_previous(data, runtime) == [ours.pid]
+        assert ours.wait(10) is not None
+        assert other.poll() is None
+        assert not data.children.exists()
+    finally:
+        for process in (ours, other):
+            if process.poll() is None:
+                process.kill()
+            process.wait()
+
+
+def test_corrupted_leaf_is_reissued(tmp_path: Path) -> None:
+    from shift_scheduler.desktop import launcher
+
+    data = DataLayout(tmp_path)
+    data.tls.mkdir(parents=True)
+    tls.ensure(data.ca, data.cert, data.key)
+    first_ca = data.ca.read_bytes()
+    data.cert.write_bytes(b"-----BEGIN CERTIFICATE-----\ntruncated")
+    launcher.ensure_tls(data)
+    assert data.ca.read_bytes() != first_ca
+    x509.load_pem_x509_certificate(data.cert.read_bytes()).verify_directly_issued_by(
+        x509.load_pem_x509_certificate(data.ca.read_bytes())
+    )
+
+
+def test_setup_token_changes_per_launch_and_is_not_stored(tmp_path: Path) -> None:
+    assert secrets.setup_token() != secrets.setup_token()
+    assert "setup_token" not in secrets.FIELDS

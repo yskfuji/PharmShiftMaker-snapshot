@@ -19,9 +19,10 @@ from cryptography.hazmat.primitives.asymmetric.ed25519 import Ed25519PrivateKey
 
 FIELDS = (
     "install_id",
-    "db_password",
+    "admin_db_password",
+    "app_db_password",
+    "control_db_password",
     "jwt_secret",
-    "setup_token",
     "authority_private_key",
     "authority_public_key",
     "source_token",
@@ -43,9 +44,10 @@ def generate() -> dict[str, str]:
     )
     return {
         "install_id": secrets.token_hex(16),
-        "db_password": secrets.token_urlsafe(32),
+        "admin_db_password": secrets.token_urlsafe(32),
+        "app_db_password": secrets.token_urlsafe(32),
+        "control_db_password": secrets.token_urlsafe(32),
         "jwt_secret": secrets.token_urlsafe(48),
-        "setup_token": secrets.token_urlsafe(32),
         "authority_private_key": private.hex(),
         "authority_public_key": public.hex(),
         "source_token": secrets.token_urlsafe(32),
@@ -53,6 +55,11 @@ def generate() -> dict[str, str]:
         "erasure_manifest_key": secrets.token_hex(32),
         "archive_key": secrets.token_hex(32),
     }
+
+
+def setup_token() -> str:
+    """Per-launch first-run token; never stored, so it changes on every start."""
+    return secrets.token_urlsafe(32)
 
 
 def write_private(path: Path, data: bytes) -> None:

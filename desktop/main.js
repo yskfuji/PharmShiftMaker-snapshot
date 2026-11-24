@@ -12,6 +12,7 @@ const readline = require('node:readline');
 const ORIGIN = 'https://127.0.0.1:18513';
 const BOOTSTRAP_URL = `${ORIGIN}/api/setup/bootstrap`;
 const STOP_TIMEOUT_MS = 30000;
+const LOG_LIMIT = 10 * 1024 * 1024;
 const smokeResult = process.env.PSM_SMOKE_RESULT || '';
 
 let launcher = null;
@@ -58,9 +59,16 @@ function lockDown(ses, caPem, setupToken) {
   });
   ses.setPermissionRequestHandler((_wc, _permission, callback) => callback(false));
   ses.setPermissionCheckHandler(() => false);
-  ses.webRequest.onBeforeSendHeaders({ urls: [BOOTSTRAP_URL] }, (details, callback) => {
-    callback({ requestHeaders: { ...details.requestHeaders, 'X-Setup-Token': setupToken } });
-  });
+  // The launcher passes a per-launch token only while no account exists.
+  if (setupToken) {
+    ses.webRequest.onBeforeSendHeaders({ urls: [BOOTSTRAP_URL] }, (details, callback) => {
+      callback({ requestHeaders: { ...details.requestHeaders, 'X-Setup-Token': setupToken } });
+    });
+  }
+}
+
+function allowed(url) {
+  return url === ORIGIN || url.startsWith(`${ORIGIN}/`);
 }
 
 function createWindow() {
@@ -74,12 +82,17 @@ function createWindow() {
       nodeIntegration: false,
       webviewTag: false,
       devTools: !app.isPackaged,
+      spellcheck: false,
     },
   });
   win.webContents.setWindowOpenHandler(() => ({ action: 'deny' }));
-  win.webContents.on('will-navigate', (event, url) => {
-    if (!url.startsWith(`${ORIGIN}/`) && url !== ORIGIN && !url.startsWith('file:')) event.preventDefault();
-  });
+  // The splash page is loaded programmatically; user and page navigation may
+  // only stay on the app origin.
+  for (const name of ['will-navigate', 'will-redirect', 'will-frame-navigate']) {
+    win.webContents.on(name, (event) => {
+      if (!allowed(event.url)) event.preventDefault();
+    });
+  }
   win.webContents.on('will-attach-webview', (event) => event.preventDefault());
   win.loadFile(path.join(__dirname, 'splash.html'));
   win.on('closed', () => {
@@ -98,6 +111,7 @@ function fail(message) {
 }
 
 function onReady(event) {
+  if (quitting || !win) return;
   const ses = session.defaultSession;
   lockDown(ses, fs.readFileSync(event.ca, 'utf8'), event.setup_token);
   if (smokeResult) {
@@ -117,11 +131,26 @@ function onReady(event) {
             await new Promise((resolve) => setTimeout(resolve, 1000));
           }
         }
+        let bootstrap = null;
+        if (process.env.PSM_SMOKE_BOOTSTRAP === '1' && win.webContents.getURL().endsWith('/setup')) {
+          // Test only: the page posts first-run setup itself, so the header
+          // injection for the bootstrap URL is exercised end to end.
+          const body = JSON.stringify({
+            login_id: 'smoke-shell',
+            display_name: 'Synthetic Admin',
+            password: crypto.randomBytes(18).toString('base64url'),
+            facility_id: 'synthetic-facility',
+            department_id: 'synthetic-pharmacy',
+          });
+          bootstrap = await win.webContents.executeJavaScript(
+            `fetch('/api/setup/bootstrap',{method:'POST',headers:{'Content-Type':'application/json'},body:${JSON.stringify(body)}}).then(r=>r.status)`,
+          );
+        }
         if (smokeDone) return;
         smokeDone = true;
         fs.writeFileSync(
           smokeResult,
-          JSON.stringify({ ok: true, url: win.webContents.getURL(), title: win.webContents.getTitle(), screenshot }),
+          JSON.stringify({ ok: true, url: win.webContents.getURL(), title: win.webContents.getTitle(), screenshot, bootstrap }),
         );
         app.quit();
       }, Number(process.env.PSM_SMOKE_DELAY_MS || 3000));
@@ -145,6 +174,11 @@ function start() {
   if (process.env.PSM_DATA_DIR) args.push(process.env.PSM_DATA_DIR);
   const logPath = path.join(app.getPath('logs'), 'launcher.log');
   fs.mkdirSync(path.dirname(logPath), { recursive: true });
+  try {
+    if (fs.statSync(logPath).size > LOG_LIMIT) fs.renameSync(logPath, `${logPath}.1`);
+  } catch (_error) {
+    // no previous log
+  }
   const stderr = fs.openSync(logPath, 'a', 0o600);
   launcher = spawn(pythonPath(runtime), args, { stdio: ['pipe', 'pipe', stderr], windowsHide: true });
   launcherExited = new Promise((resolve) => launcher.once('exit', resolve));
@@ -173,7 +207,8 @@ app.on('before-quit', (event) => {
   event.preventDefault();
   quitting = true;
   launcher.stdin.end();
-  const timer = setTimeout(() => launcher && launcher.kill(), STOP_TIMEOUT_MS);
+  // SIGTERM only asks the launcher to stop; after the timeout, end it for sure.
+  const timer = setTimeout(() => launcher && launcher.kill('SIGKILL'), STOP_TIMEOUT_MS);
   launcherExited.then(() => {
     clearTimeout(timer);
     // Everything behind the window has stopped; do not wait on a stalled renderer.

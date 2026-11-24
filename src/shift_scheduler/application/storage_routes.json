@@ -4089,54 +4089,6 @@
       },
       "handler_status": "UNVERIFIED"
     },
-    "src/shift_scheduler/desktop/launcher.py:Supervisor.run:8084fbcbb43bec8bece0bdcc0303f276c055d5c8c581cfbafc93c1c90bb29f75": {
-      "path": "src/shift_scheduler/desktop/launcher.py",
-      "symbol": "Supervisor.run",
-      "line": 98,
-      "expression_hash": "8084fbcbb43bec8bece0bdcc0303f276c055d5c8c581cfbafc93c1c90bb29f75",
-      "call": "subprocess.run",
-      "status": "UNVERIFIED",
-      "policy": "Desktop launcher starts bundled programs (initdb/pg_ctl/PostgreSQL, alembic, control authority, API, worker, web) whose stores and logs hold application data; per-store reconciliation is not verified.",
-      "classification": "DELEGATED_PROGRAM",
-      "classification_evidence": {
-        "expression_hash": "8084fbcbb43bec8bece0bdcc0303f276c055d5c8c581cfbafc93c1c90bb29f75",
-        "reason": "Desktop launcher delegates to bundled native/Python/Node programs; the child programs own database and file bytes. Output goes to owner-only log files.",
-        "basis": "source_expression_and_enclosing_function_review"
-      },
-      "handler_status": "UNVERIFIED"
-    },
-    "src/shift_scheduler/desktop/launcher.py:Supervisor.start:3b3b72a1043ffc60291210482c70a95273c2d17101cb0d24740be3831fe9b76c": {
-      "path": "src/shift_scheduler/desktop/launcher.py",
-      "symbol": "Supervisor.start",
-      "line": 121,
-      "expression_hash": "3b3b72a1043ffc60291210482c70a95273c2d17101cb0d24740be3831fe9b76c",
-      "call": "subprocess.Popen",
-      "status": "UNVERIFIED",
-      "policy": "Desktop launcher starts bundled programs (initdb/pg_ctl/PostgreSQL, alembic, control authority, API, worker, web) whose stores and logs hold application data; per-store reconciliation is not verified.",
-      "classification": "DELEGATED_PROGRAM",
-      "classification_evidence": {
-        "expression_hash": "3b3b72a1043ffc60291210482c70a95273c2d17101cb0d24740be3831fe9b76c",
-        "reason": "Desktop launcher delegates to bundled native/Python/Node programs; the child programs own database and file bytes. Output goes to owner-only log files.",
-        "basis": "source_expression_and_enclosing_function_review"
-      },
-      "handler_status": "UNVERIFIED"
-    },
-    "src/shift_scheduler/desktop/launcher.py:_pg_running:e64cbec6278dbc610a3c9d8032c76d7da6aee995c844a5af59531bfd2e579ae9": {
-      "path": "src/shift_scheduler/desktop/launcher.py",
-      "symbol": "_pg_running",
-      "line": 160,
-      "expression_hash": "e64cbec6278dbc610a3c9d8032c76d7da6aee995c844a5af59531bfd2e579ae9",
-      "call": "subprocess.run",
-      "status": "UNVERIFIED",
-      "policy": "read-only-status-query",
-      "classification": "NON_PERSONAL",
-      "classification_evidence": {
-        "expression_hash": "e64cbec6278dbc610a3c9d8032c76d7da6aee995c844a5af59531bfd2e579ae9",
-        "reason": "pg_ctl status only reads postmaster.pid; its output is discarded and nothing is written.",
-        "basis": "source_expression_and_enclosing_function_review"
-      },
-      "handler_status": "UNVERIFIED"
-    },
     "src/shift_scheduler/desktop/launcher.py:emit:f512dc8ebf5c3d723c245534e94b2fb340234aaa01db482f6e1db38262b27bb5": {
       "path": "src/shift_scheduler/desktop/launcher.py",
       "symbol": "emit",
@@ -4149,54 +4101,6 @@
       "classification_evidence": {
         "expression_hash": "f512dc8ebf5c3d723c245534e94b2fb340234aaa01db482f6e1db38262b27bb5",
         "reason": "Writes launcher protocol lines (stage names, readiness, startup error summaries) or usage text to the shell pipe; no staff or schedule data is processed before readiness.",
-        "basis": "source_expression_and_enclosing_function_review"
-      },
-      "handler_status": "UNVERIFIED"
-    },
-    "src/shift_scheduler/desktop/launcher.py:init_cluster:41b2129dd9d130e0cfb0f1130d80435ce23bc87253d6a1e5f39c0857e797e36f": {
-      "path": "src/shift_scheduler/desktop/launcher.py",
-      "symbol": "init_cluster",
-      "line": 209,
-      "expression_hash": "41b2129dd9d130e0cfb0f1130d80435ce23bc87253d6a1e5f39c0857e797e36f",
-      "call": "(pgdata / 'pg_hba.conf').write_text",
-      "status": "UNVERIFIED",
-      "policy": "cluster-configuration-and-transient-password-file",
-      "classification": "NON_PERSONAL",
-      "classification_evidence": {
-        "expression_hash": "41b2129dd9d130e0cfb0f1130d80435ce23bc87253d6a1e5f39c0857e797e36f",
-        "reason": "Writes PostgreSQL configuration (listen address, port, pg_hba) and a transient owner-only password file deleted after initdb; no personal data.",
-        "basis": "source_expression_and_enclosing_function_review"
-      },
-      "handler_status": "UNVERIFIED"
-    },
-    "src/shift_scheduler/desktop/launcher.py:init_cluster:60ede958e64f44ba997bf43dd6614b4e70257ea750d24e62ba26bc00b25c6c95": {
-      "path": "src/shift_scheduler/desktop/launcher.py",
-      "symbol": "init_cluster",
-      "line": 201,
-      "expression_hash": "60ede958e64f44ba997bf43dd6614b4e70257ea750d24e62ba26bc00b25c6c95",
-      "call": "(pgdata / 'postgresql.conf').open",
-      "status": "UNVERIFIED",
-      "policy": "cluster-configuration-and-transient-password-file",
-      "classification": "NON_PERSONAL",
-      "classification_evidence": {
-        "expression_hash": "60ede958e64f44ba997bf43dd6614b4e70257ea750d24e62ba26bc00b25c6c95",
-        "reason": "Writes PostgreSQL configuration (listen address, port, pg_hba) and a transient owner-only password file deleted after initdb; no personal data.",
-        "basis": "source_expression_and_enclosing_function_review"
-      },
-      "handler_status": "UNVERIFIED"
-    },
-    "src/shift_scheduler/desktop/launcher.py:init_cluster:70a071634b3bc050083a7d8c6072d711280ffac417c49f95c4c01c287a954eaf": {
-      "path": "src/shift_scheduler/desktop/launcher.py",
-      "symbol": "init_cluster",
-      "line": 202,
-      "expression_hash": "70a071634b3bc050083a7d8c6072d711280ffac417c49f95c4c01c287a954eaf",
-      "call": "conf.write",
-      "status": "UNVERIFIED",
-      "policy": "cluster-configuration-and-transient-password-file",
-      "classification": "NON_PERSONAL",
-      "classification_evidence": {
-        "expression_hash": "70a071634b3bc050083a7d8c6072d711280ffac417c49f95c4c01c287a954eaf",
-        "reason": "Writes PostgreSQL configuration (listen address, port, pg_hba) and a transient owner-only password file deleted after initdb; no personal data.",
         "basis": "source_expression_and_enclosing_function_review"
       },
       "handler_status": "UNVERIFIED"
@@ -4293,6 +4197,102 @@
       "classification_evidence": {
         "expression_hash": "cb49df58d02df597b6b2a14918cc205e6fc71ffac8b5617b04699e05c73c1397",
         "reason": "Creates owner-only files holding per-install secrets and TLS material; keys, not personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:Supervisor._popen:3b3b72a1043ffc60291210482c70a95273c2d17101cb0d24740be3831fe9b76c": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "Supervisor._popen",
+      "line": 129,
+      "expression_hash": "3b3b72a1043ffc60291210482c70a95273c2d17101cb0d24740be3831fe9b76c",
+      "call": "subprocess.Popen",
+      "status": "UNVERIFIED",
+      "policy": "Desktop launcher starts bundled programs (initdb/pg_ctl/PostgreSQL, alembic, control authority, API, worker, web) whose stores and logs hold application data; per-store reconciliation is not verified.",
+      "classification": "DELEGATED_PROGRAM",
+      "classification_evidence": {
+        "expression_hash": "3b3b72a1043ffc60291210482c70a95273c2d17101cb0d24740be3831fe9b76c",
+        "reason": "Desktop launcher delegates to bundled native/Python/Node programs; the child programs own database and file bytes. Output goes to owner-only log files.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:_command_of:b4f681031d8db4d4a9a51e389bc89afa15fd84829738693e3ef685dd7646edca": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "_command_of",
+      "line": 215,
+      "expression_hash": "b4f681031d8db4d4a9a51e389bc89afa15fd84829738693e3ef685dd7646edca",
+      "call": "subprocess.run",
+      "status": "UNVERIFIED",
+      "policy": "read-only-status-query",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "b4f681031d8db4d4a9a51e389bc89afa15fd84829738693e3ef685dd7646edca",
+        "reason": "Read-only process status query (pg_ctl status or ps for a recorded PID); output is only compared and nothing is written.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:init_cluster:590c325207dacb183d6d6fd40eeb90240dd6dbb15fc325a81ba534945f69cdec": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "init_cluster",
+      "line": 306,
+      "expression_hash": "590c325207dacb183d6d6fd40eeb90240dd6dbb15fc325a81ba534945f69cdec",
+      "call": "conf.write",
+      "status": "UNVERIFIED",
+      "policy": "cluster-configuration-and-transient-password-file",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "590c325207dacb183d6d6fd40eeb90240dd6dbb15fc325a81ba534945f69cdec",
+        "reason": "Writes PostgreSQL configuration (listen address, port, logging, pg_hba) into the cluster being created; no personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:init_cluster:85f49b3c4466e44c734c332fbc888dfdfe70d956d9d391bcd09e411f4751c68f": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "init_cluster",
+      "line": 305,
+      "expression_hash": "85f49b3c4466e44c734c332fbc888dfdfe70d956d9d391bcd09e411f4751c68f",
+      "call": "(data.pgdata_new / 'postgresql.conf').open",
+      "status": "UNVERIFIED",
+      "policy": "cluster-configuration-and-transient-password-file",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "85f49b3c4466e44c734c332fbc888dfdfe70d956d9d391bcd09e411f4751c68f",
+        "reason": "Writes PostgreSQL configuration (listen address, port, logging, pg_hba) into the cluster being created; no personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:init_cluster:89336a5c21b90714c352d0d2c1793ca0d620054c700f67c245320155582a2e04": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "init_cluster",
+      "line": 307,
+      "expression_hash": "89336a5c21b90714c352d0d2c1793ca0d620054c700f67c245320155582a2e04",
+      "call": "(data.pgdata_new / 'pg_hba.conf').write_text",
+      "status": "UNVERIFIED",
+      "policy": "cluster-configuration-and-transient-password-file",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "89336a5c21b90714c352d0d2c1793ca0d620054c700f67c245320155582a2e04",
+        "reason": "Writes PostgreSQL configuration (listen address, port, logging, pg_hba) into the cluster being created; no personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:pg_running:e64cbec6278dbc610a3c9d8032c76d7da6aee995c844a5af59531bfd2e579ae9": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "pg_running",
+      "line": 260,
+      "expression_hash": "e64cbec6278dbc610a3c9d8032c76d7da6aee995c844a5af59531bfd2e579ae9",
+      "call": "subprocess.run",
+      "status": "UNVERIFIED",
+      "policy": "read-only-status-query",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "e64cbec6278dbc610a3c9d8032c76d7da6aee995c844a5af59531bfd2e579ae9",
+        "reason": "Read-only process status query (pg_ctl status or ps for a recorded PID); output is only compared and nothing is written.",
         "basis": "source_expression_and_enclosing_function_review"
       },
       "handler_status": "UNVERIFIED"

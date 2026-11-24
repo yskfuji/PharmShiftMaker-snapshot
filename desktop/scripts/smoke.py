@@ -60,7 +60,14 @@ def call(
 
 def start(runtime: Path, data: Path) -> tuple[subprocess.Popen[bytes], dict[str, Any]]:
     process = subprocess.Popen(
-        [str(python_of(runtime)), "-I", "-m", "shift_scheduler.desktop", str(runtime), str(data)],
+        [
+            str(python_of(runtime)),
+            "-I",
+            "-m",
+            "shift_scheduler.desktop",
+            str(runtime),
+            str(data),
+        ],
         stdin=subprocess.PIPE,
         stdout=subprocess.PIPE,
     )
@@ -87,10 +94,14 @@ def stop(process: subprocess.Popen[bytes]) -> int:
 def listening_hosts() -> list[str]:
     """Local addresses of listeners on our ports (best effort per OS)."""
     if sys.platform == "win32":
-        output = subprocess.run(["netstat", "-ano", "-p", "TCP"], capture_output=True, text=True).stdout
+        output = subprocess.run(
+            ["netstat", "-ano", "-p", "TCP"], capture_output=True, text=True
+        ).stdout
         found = re.findall(r"TCP\s+(\S+):(\d+)\s+\S+\s+LISTENING", output)
     else:
-        output = subprocess.run(["lsof", "-nP", "-iTCP", "-sTCP:LISTEN"], capture_output=True, text=True).stdout
+        output = subprocess.run(
+            ["lsof", "-nP", "-iTCP", "-sTCP:LISTEN"], capture_output=True, text=True
+        ).stdout
         found = re.findall(r"TCP (\S+):(\d+) \(LISTEN\)", output)
     return sorted({host for host, port in found if int(port) in PORTS})
 
@@ -112,7 +123,9 @@ def main() -> int:
     context = ssl.create_default_context(cafile=ready["ca"])
     try:
         checks["login_page"] = call(context, "/login")[0]
-        checks["setup_status_first"] = json.loads(call(context, "/api/setup/status")[2]).get("initialized")
+        checks["setup_status_first"] = json.loads(
+            call(context, "/api/setup/status")[2]
+        ).get("initialized")
         account = {
             "login_id": "smoke-admin",
             "display_name": "合成 管理者",
@@ -120,11 +133,20 @@ def main() -> int:
             "facility_id": "synthetic-facility",
             "department_id": "synthetic-pharmacy",
         }
-        checks["bootstrap_without_token"] = call(context, "/api/setup/bootstrap", account)[0]
-        checks["bootstrap_with_token"] = call(
-            context, "/api/setup/bootstrap", account, {"X-Setup-Token": ready["setup_token"]}
+        checks["bootstrap_without_token"] = call(
+            context, "/api/setup/bootstrap", account
         )[0]
-        status, headers, _ = call(context, "/api/auth/login", {"username": "smoke-admin", "password": password})
+        checks["bootstrap_with_token"] = call(
+            context,
+            "/api/setup/bootstrap",
+            account,
+            {"X-Setup-Token": ready["setup_token"]},
+        )[0]
+        status, headers, _ = call(
+            context,
+            "/api/auth/login",
+            {"username": "smoke-admin", "password": password},
+        )
         cookie = headers.get("Set-Cookie") or headers.get("set-cookie") or ""
         checks["login"] = status
         checks["cookie_secure_httponly"] = "Secure" in cookie and "HttpOnly" in cookie
@@ -136,9 +158,14 @@ def main() -> int:
     process, ready = start(runtime, data)
     context = ssl.create_default_context(cafile=ready["ca"])
     try:
-        checks["setup_status_second"] = json.loads(call(context, "/api/setup/status")[2]).get("initialized")
+        checks["setup_status_second"] = json.loads(
+            call(context, "/api/setup/status")[2]
+        ).get("initialized")
+        checks["setup_token_withheld_after_setup"] = ready.get("setup_token") is None
         checks["login_after_restart"] = call(
-            context, "/api/auth/login", {"username": "smoke-admin", "password": password}
+            context,
+            "/api/auth/login",
+            {"username": "smoke-admin", "password": password},
         )[0]
     finally:
         checks["second_exit"] = stop(process)
@@ -154,11 +181,14 @@ def main() -> int:
         and checks["first_exit"] == 0
         and checks["ports_closed_after_stop"]
         and checks["setup_status_second"] is True
+        and checks["setup_token_withheld_after_setup"]
         and checks["login_after_restart"] == 200
         and checks["second_exit"] == 0
     )
     checks["ok"] = ok
-    result_path.write_text(json.dumps(checks, ensure_ascii=False, indent=2), encoding="utf-8")
+    result_path.write_text(
+        json.dumps(checks, ensure_ascii=False, indent=2), encoding="utf-8"
+    )
     print(json.dumps(checks, ensure_ascii=False))
     return 0 if ok else 1
 

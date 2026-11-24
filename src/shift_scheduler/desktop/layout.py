@@ -19,7 +19,11 @@ DB_PORT = 18512
 
 APP_DB = "pharmshift"
 CONTROL_DB = "pharmshift_control"
-DB_USER = "pharmshift"
+# The superuser is used only by the launcher (role and database management).
+# Each database is owned by its own non-superuser login role.
+ADMIN_USER = "pharmshift_admin"
+APP_USER = "pharmshift_app"
+CONTROL_USER = "pharmshift_control"
 
 WEB_ORIGIN = f"https://{HOST}:{WEB_PORT}"
 API_URL = f"https://{HOST}:{API_PORT}"
@@ -68,6 +72,16 @@ class DataLayout:
     @property
     def pgdata(self) -> Path:
         return self.root / "pgdata"
+
+    @property
+    def pgdata_new(self) -> Path:
+        """First-run cluster under construction; renamed to pgdata when complete."""
+        return self.root / "pgdata.new"
+
+    @property
+    def children(self) -> Path:
+        """PIDs of the previous session's children, for recovery after a crash."""
+        return self.state / "children.json"
 
     @property
     def storage(self) -> Path:

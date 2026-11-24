@@ -41,11 +41,15 @@ def _base(parent: Mapping[str, str]) -> dict[str, str]:
     return env
 
 
-def db_url(secret: Mapping[str, str], database: str) -> str:
-    password = quote(secret["db_password"], safe="")
+# Never send a password in clear text: a process of another OS user that grabs
+# the port while PostgreSQL is down cannot obtain it (SCRAM proves possession).
+REQUIRE_AUTH = "scram-sha-256"
+
+
+def db_url(user: str, password: str, database: str) -> str:
     return (
-        f"postgresql+psycopg://{layout.DB_USER}:{password}@{layout.HOST}:"
-        f"{layout.DB_PORT}/{database}"
+        f"postgresql+psycopg://{user}:{quote(password, safe='')}@{layout.HOST}:"
+        f"{layout.DB_PORT}/{database}?require_auth={REQUIRE_AUTH}"
     )
 
 
@@ -59,8 +63,9 @@ def credentials(secret: Mapping[str, str]) -> dict[str, dict[str, str]]:
 def postgres(parent: Mapping[str, str], secret: Mapping[str, str]) -> dict[str, str]:
     env = _base(parent)
     env.update(
-        PGPASSWORD=secret["db_password"],
-        PGUSER=layout.DB_USER,
+        PGPASSWORD=secret["admin_db_password"],
+        PGUSER=layout.ADMIN_USER,
+        PGREQUIREAUTH=REQUIRE_AUTH,
         PGHOST=layout.HOST,
         PGPORT=str(layout.DB_PORT),
     )
@@ -73,7 +78,9 @@ def control(
     env = _base(parent)
     env.update(
         PHARMSHIFT_ENV="desktop",
-        PHARMSHIFT_AUTHORITY_DB_URL=db_url(secret, layout.CONTROL_DB),
+        PHARMSHIFT_AUTHORITY_DB_URL=db_url(
+            layout.CONTROL_USER, secret["control_db_password"], layout.CONTROL_DB
+        ),
         PHARMSHIFT_AUTHORITY_PRIVATE_KEY=secret["authority_private_key"],
         PHARMSHIFT_AUTHORITY_CREDENTIALS=json.dumps(credentials(secret)),
         SSL_CERT_FILE=str(data.ca),
@@ -82,7 +89,10 @@ def control(
 
 
 def application(
-    parent: Mapping[str, str], secret: Mapping[str, str], data: DataLayout
+    parent: Mapping[str, str],
+    secret: Mapping[str, str],
+    data: DataLayout,
+    setup_token: str,
 ) -> dict[str, str]:
     """API and worker: the settings validated by config/desktop.py."""
     env = _base(parent)
@@ -90,7 +100,7 @@ def application(
         PHARMSHIFT_ENV="desktop",
         AUTH_MODE="local",
         SHIFT_SCHEDULER_DATA_BACKEND="db",
-        DATABASE_URL=db_url(secret, layout.APP_DB),
+        DATABASE_URL=db_url(layout.APP_USER, secret["app_db_password"], layout.APP_DB),
         AUTH_JWT_SECRET=secret["jwt_secret"],
         AUTH_COOKIE_SECURE="true",
         AUTH_COOKIE_SAMESITE="strict",
@@ -98,7 +108,7 @@ def application(
         API_CORS_ALLOW_ORIGINS=layout.WEB_ORIGIN,
         PHARMSHIFT_BIND_HOST=layout.HOST,
         PHARMSHIFT_INSTALL_ID=secret["install_id"],
-        PHARMSHIFT_SETUP_TOKEN=secret["setup_token"],
+        PHARMSHIFT_SETUP_TOKEN=setup_token,
         PHARMSHIFT_MANAGED_STORAGE=str(data.storage),
         PHARMSHIFT_CONTROL_URL=layout.CONTROL_URL,
         PHARMSHIFT_CONTROL_NODE=SOURCE_NODE,
