@@ -597,9 +597,9 @@
       "sha256": "31026bd3ca2dba8dabfe7292d0cf5f0e2c88e01c09fc9c46a0c3c6cefe7d6733"
     },
     {
-      "bytes": 15939,
+      "bytes": 16216,
       "path": "docs/desktop/windows-storage.md",
-      "sha256": "8919b34007fda687e67511c97d9e19d653439ebbe0c1e1390e86644b65aa31d5"
+      "sha256": "cd5dd324776e5511459e74b6313eb49377d93c4d21b496f2f4c6c4e072ae62ba"
     },
     {
       "bytes": 8530,
@@ -8379,7 +8379,7 @@
     {
       "bytes": 238083,
       "path": "src/shift_scheduler/application/storage_routes.json",
-      "sha256": "878e9cd2c6673750b886024cfb7b4dd8cbeca7328539c9928d54d5af2b60c61a"
+      "sha256": "e09aecee43122995e69ff1d2f4d3ab3262621629d53ff141f7bfda223ac50c91"
     },
     {
       "bytes": 5618,
@@ -8757,9 +8757,9 @@
       "sha256": "92d108bad4f37cdd050b566fb21447c30ca80b4e0d2bbd0b654f7179a9b33d3f"
     },
     {
-      "bytes": 29468,
+      "bytes": 29744,
       "path": "src/shift_scheduler/ops/platform_fs.py",
-      "sha256": "5281a57763dc453589a12f25d15328d39095397edf2913b0f84676486fdc3618"
+      "sha256": "182444db7b5febb5e056d61f77545d99b69434a67f616189ba2e7dae4d06c082"
     },
     {
       "bytes": 119,
@@ -9267,9 +9267,9 @@
       "sha256": "59f0c27e9d743c35853ae9b4e499a3a2f1e29cc8f5ca69ec9f313fcc6d9477c6"
     },
     {
-      "bytes": 26572,
+      "bytes": 26686,
       "path": "tests/test_desktop_local_auth.py",
-      "sha256": "fc8bc4838fe0c4adb8f11a422e31261fe794341474bbe18f3973ef7fdc978c3e"
+      "sha256": "d9453ef8369a026343c8d275fde4d1b2ea88bc87c3ed70eac0ec5f0d8adc2a18"
     },
     {
       "bytes": 6815,
@@ -9627,9 +9627,9 @@
       "sha256": "82f756b2842377a5456bb3a594039d5bea75a217754ea20e2a8c2b3ebe26ba4d"
     },
     {
-      "bytes": 22770,
+      "bytes": 23347,
       "path": "tests/test_platform_fs.py",
-      "sha256": "ca5c7cb83d4a13b718ebde8802b3d1c24f73fbe262b8b9c1adc842dce7e6a3ca"
+      "sha256": "008cc52f9b152593348acd5f95064370143a53b183604daff02faea36cec037e"
     },
     {
       "bytes": 5365,
@@ -9939,5 +9939,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "3b65393f5559ea5b69c9d92048305a77f7d98b061212faa45e56570106cacd84",
-  "source_commit": "423faa3ffd9d1066624f8663f506af0dd8f7c9e7"
+  "source_commit": "89548a267689de659dc75bf6cf3e5ff9185b6e08"
 }
