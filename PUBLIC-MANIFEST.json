@@ -47,9 +47,9 @@
       "sha256": "e754143db3678e0a79e3ee08f085a65c381fb804e690691bfc94fc14d5f908ef"
     },
     {
-      "bytes": 5397,
+      "bytes": 6106,
       "path": ".github/workflows/desktop.yml",
-      "sha256": "4e3dbf8adceb9883d59b87084f9a67280cb6157f8bb1e64153c4393056e03ce5"
+      "sha256": "84dfe742d9b1f23a728b461f696efe6baf8d0b6b8919d05972bc46e234a59d41"
     },
     {
       "bytes": 1689,
@@ -257,9 +257,9 @@
       "sha256": "6af1487679755a574f5384753be152711c9ee926dfb448a84756da02b360948d"
     },
     {
-      "bytes": 6643,
+      "bytes": 8117,
       "path": "desktop/main.js",
-      "sha256": "38e72a2edf8ac0c4bb99219a4579febe8f8e767246a5116feae28a9f6ddb83f9"
+      "sha256": "b33f331417c3e46e231300de2d391275e12bbfcff33eda8fa0f052d31a345b21"
     },
     {
       "bytes": 127151,
@@ -287,9 +287,9 @@
       "sha256": "8104811f89723ba63101bb90c36f398d2d0907ca154c07cb782a03cbb985cd7e"
     },
     {
-      "bytes": 6338,
+      "bytes": 6795,
       "path": "desktop/scripts/smoke.py",
-      "sha256": "3f4a8c097f2e5dba2e7aa996d75a9b7ab919787fdc2698be4c6bd971c412f284"
+      "sha256": "e706c53f1039c8f68b598e76e32790988d2275115190c026656fdccd25bc96d2"
     },
     {
       "bytes": 516,
@@ -517,9 +517,9 @@
       "sha256": "d0c11bc78593d710f08f1755ca28f1f4a86e1265639d638e9fad40781f75542b"
     },
     {
-      "bytes": 23103,
+      "bytes": 23378,
       "path": "docs/architecture/er/ia-map.md",
-      "sha256": "af7c31002d81c7955eea76a77eb9ae590249a76672d5aa1bb581245b120b0133"
+      "sha256": "afd77515149df0d288b2f956c4eeaaf5eaa76f269bc9acae8e52db84816642f1"
     },
     {
       "bytes": 4737,
@@ -584,7 +584,7 @@
     {
       "bytes": 8967,
       "path": "docs/architecture/navigation.md",
-      "sha256": "a916b0fa8582bc4aee610994b738c7bffb763297c75421271c5005ee95d50f27"
+      "sha256": "a4327fa55c790916aeaa9084cc00e676a833e04779b12a5bafdf1f6323783e4f"
     },
     {
       "bytes": 1080,
@@ -647,9 +647,9 @@
       "sha256": "1584a802cd162fbdbd9d42fe648ff78b06b86707d9864a0257b213d9191e686b"
     },
     {
-      "bytes": 8122,
+      "bytes": 10674,
       "path": "docs/desktop/desktop-shell.md",
-      "sha256": "f383528509930969a632ff6b7a3308d9e350a46f0667f322b068e41c84aea65d"
+      "sha256": "c3f8d654168ea10303254d9c0667d099d3cfacc331e1d19c5486dc259af42870"
     },
     {
       "bytes": 6047,
@@ -8442,9 +8442,9 @@
       "sha256": "27d97d94e61d849d06509e5ad6e4dbae7b73e4f75c1ed00d43d95816fba3dc2e"
     },
     {
-      "bytes": 251654,
+      "bytes": 251419,
       "path": "src/shift_scheduler/application/storage_routes.json",
-      "sha256": "8032daf517951a3ea06de54a39094f56424c53dc5b8f22a4baaeb684a668d56b"
+      "sha256": "7ce8c96deedeeeb2c5e5d3a1fa32f3eea48088395c5180da81773c9a5930602f"
     },
     {
       "bytes": 5618,
@@ -8707,24 +8707,24 @@
       "sha256": "b8f8fd7da6bfabc0789d2db9f423030c926870af21abbee07620632989d91077"
     },
     {
-      "bytes": 4092,
+      "bytes": 4432,
       "path": "src/shift_scheduler/desktop/environment.py",
-      "sha256": "c06414a01464c853a4aca927880541442ec8ca413edc6d4e854c8dff2a7d958d"
+      "sha256": "bc8ddfee00203ef9fe6a9437c16fbf5ac454a5739a7641fb1ab680c9ccf38477"
     },
     {
-      "bytes": 16082,
+      "bytes": 21837,
       "path": "src/shift_scheduler/desktop/launcher.py",
-      "sha256": "de9ac6a40a6a32d13dd90098805d04448e26911ed2956f40c60b77fb9d56b29b"
+      "sha256": "33db1c88edd4b3061b225a765e6a1443afa63b03b9992aec9a2113d87dc482f1"
     },
     {
-      "bytes": 2981,
+      "bytes": 3541,
       "path": "src/shift_scheduler/desktop/layout.py",
-      "sha256": "673290cc2745d0169dedb862fac744f248ae8e8a985243fdbd73f7756038c72b"
+      "sha256": "cce55ccb56a48fe356b5f3f3750e4c98d11dc0536762eedb02950a6305bfbc2f"
     },
     {
-      "bytes": 2821,
+      "bytes": 3073,
       "path": "src/shift_scheduler/desktop/secrets.py",
-      "sha256": "503bd0d8564d14bc64d10c0ff0bc8fa27a7c7c15f91524f3b0dbca43f559c879"
+      "sha256": "967e3d6e310f51190f2f6b6aca2d53434439636aa97f2027221b5c45672baa38"
     },
     {
       "bytes": 4337,
@@ -9362,9 +9362,9 @@
       "sha256": "59f0c27e9d743c35853ae9b4e499a3a2f1e29cc8f5ca69ec9f313fcc6d9477c6"
     },
     {
-      "bytes": 7303,
+      "bytes": 10140,
       "path": "tests/test_desktop_launcher.py",
-      "sha256": "58540807344f1b31b19d5c67a6c0013a8f6c76c8b47f35f538897b2cadd7e349"
+      "sha256": "9063b999c3640f71e799980cf3c13318233ce8966dd3124dd555cbeff2753ce9"
     },
     {
       "bytes": 26337,
@@ -10034,5 +10034,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "3b65393f5559ea5b69c9d92048305a77f7d98b061212faa45e56570106cacd84",
-  "source_commit": "0a3d95ae4d77daf7480694a051985ebb1d99f0bc"
+  "source_commit": "121f8188364c3619d6f0d018f0646284bb44a2a8"
 }
