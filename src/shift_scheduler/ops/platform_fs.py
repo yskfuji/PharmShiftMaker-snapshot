@@ -575,8 +575,14 @@ if sys.platform == "win32":  # pragma: no cover - measured by the Windows CI job
         return os.lstat(_child(directory, name))
 
     def mkdir_at(name: str, mode: int, *, directory: Directory) -> None:
-        # The new directory inherits the protected DACL of the data root.
-        os.mkdir(_child(directory, name), mode)
+        """Create a directory that inherits the protected DACL of the data root.
+
+        ``mode`` is deliberately not passed on. Since CPython 3.12.4 (CVE-2024-4030)
+        ``os.mkdir(path, 0o700)`` installs its own protected DACL that also grants
+        OWNER RIGHTS (S-1-3-4), which the ACL lock-out model does not allow.
+        """
+        del mode
+        os.mkdir(_child(directory, name))
 
     def link_at(source: str, target: str, *, directory: Directory) -> None:
         source_path = _child(directory, source)

@@ -4,6 +4,7 @@ from __future__ import annotations
 
 import sys
 from datetime import UTC, datetime, timedelta
+from pathlib import PurePosixPath
 from typing import Any
 
 import pytest
@@ -725,6 +726,7 @@ def test_linux_only_listed_disk_file_systems_count_as_local(
     assert desktop.mount_type(mountinfo, "/mnt/back\\slash/x") == "nfs4"
     monkeypatch.setattr(desktop.sys, "platform", "linux")
     monkeypatch.setattr(desktop.Path, "read_text", lambda _self: mountinfo)
-    assert desktop._local_filesystem(desktop.Path("/home/user/data"))
+    # PurePosixPath keeps the Linux separators when this runs on Windows too.
+    assert desktop._local_filesystem(PurePosixPath("/home/user/data"))
     for refused in ("/run/user/1000/gvfs/smb", "/mnt/back\\slash/x", "/media/vm/x"):
-        assert not desktop._local_filesystem(desktop.Path(refused)), refused
+        assert not desktop._local_filesystem(PurePosixPath(refused)), refused

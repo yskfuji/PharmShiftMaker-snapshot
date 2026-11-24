@@ -603,3 +603,16 @@ def test_windows_names_that_windows_would_rewrite_are_refused(tmp_path: Path) ->
     _junction(root, alias)
     with pytest.raises(platform_fs.LinkRefusedError):
         platform_fs.open_directory(alias)
+
+
+@WINDOWS_ONLY
+def test_windows_quarantine_inherits_the_root_dacl(tmp_path: Path) -> None:
+    root = platform_fs.prepare_data_dir(str(tmp_path / "managed"))
+    directory = platform_fs.open_directory(root)
+    platform_fs.mkdir_at(".erasure", 0o700, directory=directory)
+    quarantine = os.path.join(root, ".erasure")
+    assert platform_fs.dacl_problems(quarantine, require_protected=False) == []
+    assert not platform_fs.security_state(quarantine).protected
+    assert platform_fs.directory_is_private(
+        platform_fs.open_subdirectory(".erasure", directory)
+    )
