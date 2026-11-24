@@ -52,7 +52,10 @@ jobs:
           CSC_IDENTITY_AUTO_DISCOVERY: "false"
         run: |
           npm ci --no-audit --no-fund
-          npx electron-builder --mac dir --publish never -c.mac.identity=- -c.mac.hardenedRuntime=false
+          npx electron-builder --mac dir --publish never -c.mac.hardenedRuntime=false
+          # electron-builder skips signing for pull requests; the fuses it flipped
+          # invalidated Electron's signature, so sign ad hoc here (no identity, no secrets).
+          codesign --force --deep --sign - dist/mac-arm64/PharmShiftMaker.app
           codesign --verify --deep --strict dist/mac-arm64/PharmShiftMaker.app
           du -sh dist/mac-arm64/PharmShiftMaker.app | tee ../results/app-size.txt
       - name: Packaged app smoke test (window loads the pinned login page)

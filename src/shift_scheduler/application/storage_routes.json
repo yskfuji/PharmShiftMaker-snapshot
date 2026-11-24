@@ -4217,22 +4217,6 @@
       },
       "handler_status": "UNVERIFIED"
     },
-    "src/shift_scheduler/desktop/launcher.py:_command_of:b4f681031d8db4d4a9a51e389bc89afa15fd84829738693e3ef685dd7646edca": {
-      "path": "src/shift_scheduler/desktop/launcher.py",
-      "symbol": "_command_of",
-      "line": 215,
-      "expression_hash": "b4f681031d8db4d4a9a51e389bc89afa15fd84829738693e3ef685dd7646edca",
-      "call": "subprocess.run",
-      "status": "UNVERIFIED",
-      "policy": "read-only-status-query",
-      "classification": "NON_PERSONAL",
-      "classification_evidence": {
-        "expression_hash": "b4f681031d8db4d4a9a51e389bc89afa15fd84829738693e3ef685dd7646edca",
-        "reason": "Read-only process status query (pg_ctl status or ps for a recorded PID); output is only compared and nothing is written.",
-        "basis": "source_expression_and_enclosing_function_review"
-      },
-      "handler_status": "UNVERIFIED"
-    },
     "src/shift_scheduler/desktop/launcher.py:init_cluster:590c325207dacb183d6d6fd40eeb90240dd6dbb15fc325a81ba534945f69cdec": {
       "path": "src/shift_scheduler/desktop/launcher.py",
       "symbol": "init_cluster",
@@ -4292,6 +4276,22 @@
       "classification": "NON_PERSONAL",
       "classification_evidence": {
         "expression_hash": "e64cbec6278dbc610a3c9d8032c76d7da6aee995c844a5af59531bfd2e579ae9",
+        "reason": "Read-only process status query (pg_ctl status or ps for a recorded PID); output is only compared and nothing is written.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:_command_of:8fc32b2f151be46d53564a07dcb8c9a264afa59485f9032f9bc232186dfb5740": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "_command_of",
+      "line": 215,
+      "expression_hash": "8fc32b2f151be46d53564a07dcb8c9a264afa59485f9032f9bc232186dfb5740",
+      "call": "subprocess.run",
+      "status": "UNVERIFIED",
+      "policy": "read-only-status-query",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "8fc32b2f151be46d53564a07dcb8c9a264afa59485f9032f9bc232186dfb5740",
         "reason": "Read-only process status query (pg_ctl status or ps for a recorded PID); output is only compared and nothing is written.",
         "basis": "source_expression_and_enclosing_function_review"
       },

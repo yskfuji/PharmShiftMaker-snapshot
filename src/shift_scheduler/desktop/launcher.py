@@ -213,7 +213,8 @@ def _command_of(pid: int) -> str | None:
     if sys.platform == "win32":
         return None
     result = subprocess.run(
-        ["ps", "-o", "command=", "-p", str(pid)],
+        # -ww: never truncate (ps cuts piped output at 80 columns on Linux).
+        ["ps", "-ww", "-o", "command=", "-p", str(pid)],
         capture_output=True,
         text=True,
         check=False,
