@@ -20,13 +20,29 @@
     "productName": "PharmShiftMaker",
     "copyright": "Copyright (c) 2025-2026 Yusuke Fujinami",
     "asar": true,
-    "files": ["main.js", "splash.html", "package.json"],
-    "extraResources": [
-      { "from": "build/runtime", "to": "runtime" },
-      { "from": "../LICENSE", "to": "LICENSE" },
-      { "from": "../THIRD_PARTY_NOTICES.md", "to": "THIRD_PARTY_NOTICES.md" }
+    "files": [
+      "main.js",
+      "splash.html",
+      "package.json"
     ],
-    "directories": { "output": "dist", "buildResources": "build" },
+    "extraResources": [
+      {
+        "from": "build/runtime",
+        "to": "runtime"
+      },
+      {
+        "from": "../LICENSE",
+        "to": "LICENSE"
+      },
+      {
+        "from": "../THIRD_PARTY_NOTICES.md",
+        "to": "THIRD_PARTY_NOTICES.md"
+      }
+    ],
+    "directories": {
+      "output": "dist",
+      "buildResources": "resources"
+    },
     "electronFuses": {
       "runAsNode": false,
       "enableCookieEncryption": true,
@@ -36,18 +52,38 @@
       "onlyLoadAppFromAsar": true
     },
     "mac": {
-      "target": [{ "target": "dmg", "arch": ["arm64"] }, { "target": "zip", "arch": ["arm64"] }],
+      "target": [
+        {
+          "target": "dmg",
+          "arch": [
+            "arm64"
+          ]
+        },
+        {
+          "target": "zip",
+          "arch": [
+            "arm64"
+          ]
+        }
+      ],
       "category": "public.app-category.productivity",
-      "icon": "build/icon.png",
+      "icon": "resources/icon.png",
       "hardenedRuntime": true,
       "gatekeeperAssess": false,
-      "entitlements": "build/entitlements.mac.plist",
-      "entitlementsInherit": "build/entitlements.mac.plist",
+      "entitlements": "resources/entitlements.mac.plist",
+      "entitlementsInherit": "resources/entitlements.mac.plist",
       "notarize": false
     },
     "win": {
-      "target": [{ "target": "nsis", "arch": ["x64"] }],
-      "icon": "build/icon.png"
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
+      "icon": "resources/icon.png"
     },
     "nsis": {
       "oneClick": false,
