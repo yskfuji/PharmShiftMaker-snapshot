@@ -1,5 +1,5 @@
 {
-  "file_count": 2006,
+  "file_count": 2007,
   "files": [
     {
       "bytes": 279,
@@ -47,9 +47,9 @@
       "sha256": "e754143db3678e0a79e3ee08f085a65c381fb804e690691bfc94fc14d5f908ef"
     },
     {
-      "bytes": 6106,
+      "bytes": 6342,
       "path": ".github/workflows/desktop.yml",
-      "sha256": "84dfe742d9b1f23a728b461f696efe6baf8d0b6b8919d05972bc46e234a59d41"
+      "sha256": "90b32f8d66f411190a8ee95c5d88156cc877d13e1a81731092955adc65fd7d37"
     },
     {
       "bytes": 1689,
@@ -8444,7 +8444,7 @@
     {
       "bytes": 251419,
       "path": "src/shift_scheduler/application/storage_routes.json",
-      "sha256": "7ce8c96deedeeeb2c5e5d3a1fa32f3eea48088395c5180da81773c9a5930602f"
+      "sha256": "5fa843dbd947f445872674d071193a97c6036861036a446589d99a78bc2add45"
     },
     {
       "bytes": 5618,
@@ -8712,9 +8712,9 @@
       "sha256": "bc8ddfee00203ef9fe6a9437c16fbf5ac454a5739a7641fb1ab680c9ccf38477"
     },
     {
-      "bytes": 21837,
+      "bytes": 21921,
       "path": "src/shift_scheduler/desktop/launcher.py",
-      "sha256": "33db1c88edd4b3061b225a765e6a1443afa63b03b9992aec9a2113d87dc482f1"
+      "sha256": "a7476e79d35ebb706a96083c82ba97d1957fd4f31f8bb2053da4a89819ef7cb4"
     },
     {
       "bytes": 3541,
@@ -9365,6 +9365,11 @@
       "bytes": 10140,
       "path": "tests/test_desktop_launcher.py",
       "sha256": "9063b999c3640f71e799980cf3c13318233ce8966dd3124dd555cbeff2753ce9"
+    },
+    {
+      "bytes": 21216,
+      "path": "tests/test_desktop_launcher_process.py",
+      "sha256": "ee5f55a61ef79856b7ef44927da4bcb97c71697dd079eed99040838704103b34"
     },
     {
       "bytes": 26337,
@@ -10034,5 +10039,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "3b65393f5559ea5b69c9d92048305a77f7d98b061212faa45e56570106cacd84",
-  "source_commit": "121f8188364c3619d6f0d018f0646284bb44a2a8"
+  "source_commit": "759f3d9839d330784bb2720e195d73a8083a0fd1"
 }
