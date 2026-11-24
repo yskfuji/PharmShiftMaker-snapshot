@@ -4088,6 +4088,214 @@
         "basis": "source_expression_and_enclosing_function_review"
       },
       "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:Supervisor.run:8084fbcbb43bec8bece0bdcc0303f276c055d5c8c581cfbafc93c1c90bb29f75": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "Supervisor.run",
+      "line": 98,
+      "expression_hash": "8084fbcbb43bec8bece0bdcc0303f276c055d5c8c581cfbafc93c1c90bb29f75",
+      "call": "subprocess.run",
+      "status": "UNVERIFIED",
+      "policy": "Desktop launcher starts bundled programs (initdb/pg_ctl/PostgreSQL, alembic, control authority, API, worker, web) whose stores and logs hold application data; per-store reconciliation is not verified.",
+      "classification": "DELEGATED_PROGRAM",
+      "classification_evidence": {
+        "expression_hash": "8084fbcbb43bec8bece0bdcc0303f276c055d5c8c581cfbafc93c1c90bb29f75",
+        "reason": "Desktop launcher delegates to bundled native/Python/Node programs; the child programs own database and file bytes. Output goes to owner-only log files.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:Supervisor.start:3b3b72a1043ffc60291210482c70a95273c2d17101cb0d24740be3831fe9b76c": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "Supervisor.start",
+      "line": 121,
+      "expression_hash": "3b3b72a1043ffc60291210482c70a95273c2d17101cb0d24740be3831fe9b76c",
+      "call": "subprocess.Popen",
+      "status": "UNVERIFIED",
+      "policy": "Desktop launcher starts bundled programs (initdb/pg_ctl/PostgreSQL, alembic, control authority, API, worker, web) whose stores and logs hold application data; per-store reconciliation is not verified.",
+      "classification": "DELEGATED_PROGRAM",
+      "classification_evidence": {
+        "expression_hash": "3b3b72a1043ffc60291210482c70a95273c2d17101cb0d24740be3831fe9b76c",
+        "reason": "Desktop launcher delegates to bundled native/Python/Node programs; the child programs own database and file bytes. Output goes to owner-only log files.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:_pg_running:e64cbec6278dbc610a3c9d8032c76d7da6aee995c844a5af59531bfd2e579ae9": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "_pg_running",
+      "line": 160,
+      "expression_hash": "e64cbec6278dbc610a3c9d8032c76d7da6aee995c844a5af59531bfd2e579ae9",
+      "call": "subprocess.run",
+      "status": "UNVERIFIED",
+      "policy": "read-only-status-query",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "e64cbec6278dbc610a3c9d8032c76d7da6aee995c844a5af59531bfd2e579ae9",
+        "reason": "pg_ctl status only reads postmaster.pid; its output is discarded and nothing is written.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:emit:f512dc8ebf5c3d723c245534e94b2fb340234aaa01db482f6e1db38262b27bb5": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "emit",
+      "line": 45,
+      "expression_hash": "f512dc8ebf5c3d723c245534e94b2fb340234aaa01db482f6e1db38262b27bb5",
+      "call": "sys.stdout.write",
+      "status": "UNVERIFIED",
+      "policy": "launcher-protocol-stream",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "f512dc8ebf5c3d723c245534e94b2fb340234aaa01db482f6e1db38262b27bb5",
+        "reason": "Writes launcher protocol lines (stage names, readiness, startup error summaries) or usage text to the shell pipe; no staff or schedule data is processed before readiness.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:init_cluster:41b2129dd9d130e0cfb0f1130d80435ce23bc87253d6a1e5f39c0857e797e36f": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "init_cluster",
+      "line": 209,
+      "expression_hash": "41b2129dd9d130e0cfb0f1130d80435ce23bc87253d6a1e5f39c0857e797e36f",
+      "call": "(pgdata / 'pg_hba.conf').write_text",
+      "status": "UNVERIFIED",
+      "policy": "cluster-configuration-and-transient-password-file",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "41b2129dd9d130e0cfb0f1130d80435ce23bc87253d6a1e5f39c0857e797e36f",
+        "reason": "Writes PostgreSQL configuration (listen address, port, pg_hba) and a transient owner-only password file deleted after initdb; no personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:init_cluster:60ede958e64f44ba997bf43dd6614b4e70257ea750d24e62ba26bc00b25c6c95": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "init_cluster",
+      "line": 201,
+      "expression_hash": "60ede958e64f44ba997bf43dd6614b4e70257ea750d24e62ba26bc00b25c6c95",
+      "call": "(pgdata / 'postgresql.conf').open",
+      "status": "UNVERIFIED",
+      "policy": "cluster-configuration-and-transient-password-file",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "60ede958e64f44ba997bf43dd6614b4e70257ea750d24e62ba26bc00b25c6c95",
+        "reason": "Writes PostgreSQL configuration (listen address, port, pg_hba) and a transient owner-only password file deleted after initdb; no personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:init_cluster:70a071634b3bc050083a7d8c6072d711280ffac417c49f95c4c01c287a954eaf": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "init_cluster",
+      "line": 202,
+      "expression_hash": "70a071634b3bc050083a7d8c6072d711280ffac417c49f95c4c01c287a954eaf",
+      "call": "conf.write",
+      "status": "UNVERIFIED",
+      "policy": "cluster-configuration-and-transient-password-file",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "70a071634b3bc050083a7d8c6072d711280ffac417c49f95c4c01c287a954eaf",
+        "reason": "Writes PostgreSQL configuration (listen address, port, pg_hba) and a transient owner-only password file deleted after initdb; no personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:main:55a321af7e7bf591088e9acf9d59a3174ca761f1486bca242b815e8261952b2d": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "main",
+      "line": 500,
+      "expression_hash": "55a321af7e7bf591088e9acf9d59a3174ca761f1486bca242b815e8261952b2d",
+      "call": "sys.stderr.write",
+      "status": "UNVERIFIED",
+      "policy": "launcher-protocol-stream",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "55a321af7e7bf591088e9acf9d59a3174ca761f1486bca242b815e8261952b2d",
+        "reason": "Writes launcher protocol lines (stage names, readiness, startup error summaries) or usage text to the shell pipe; no staff or schedule data is processed before readiness.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:open_log:645c661cfd2c74d43421c2f718ad72c79725a506afd105b17fe4a1ea6e5b36cf": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "open_log",
+      "line": 68,
+      "expression_hash": "645c661cfd2c74d43421c2f718ad72c79725a506afd105b17fe4a1ea6e5b36cf",
+      "call": "os.open",
+      "status": "UNVERIFIED",
+      "policy": "Owner-only desktop log files (0600 in a 0700 directory), one 10 MB rotation generation; erasure and retention reconciliation are not verified.",
+      "classification": "PRODUCT_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "645c661cfd2c74d43421c2f718ad72c79725a506afd105b17fe4a1ea6e5b36cf",
+        "reason": "Child process logs may contain personal data in error output (e.g. PostgreSQL statement errors), so the log files are treated as personal-data stores.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/launcher.py:open_log:ded8119c68b2db3aa5821bf787b6e280abcfe6307961abe89a23927eea8422b6": {
+      "path": "src/shift_scheduler/desktop/launcher.py",
+      "symbol": "open_log",
+      "line": 69,
+      "expression_hash": "ded8119c68b2db3aa5821bf787b6e280abcfe6307961abe89a23927eea8422b6",
+      "call": "os.fdopen",
+      "status": "UNVERIFIED",
+      "policy": "Owner-only desktop log files (0600 in a 0700 directory), one 10 MB rotation generation; erasure and retention reconciliation are not verified.",
+      "classification": "PRODUCT_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "ded8119c68b2db3aa5821bf787b6e280abcfe6307961abe89a23927eea8422b6",
+        "reason": "Child process logs may contain personal data in error output (e.g. PostgreSQL statement errors), so the log files are treated as personal-data stores.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/secrets.py:write_private:5b74eef0172de58ea3611b0b5dcc8d73ffd689f16cb43bdf2ce34e0550d1956c": {
+      "path": "src/shift_scheduler/desktop/secrets.py",
+      "symbol": "write_private",
+      "line": 61,
+      "expression_hash": "5b74eef0172de58ea3611b0b5dcc8d73ffd689f16cb43bdf2ce34e0550d1956c",
+      "call": "os.open",
+      "status": "UNVERIFIED",
+      "policy": "owner-only-key-material",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "5b74eef0172de58ea3611b0b5dcc8d73ffd689f16cb43bdf2ce34e0550d1956c",
+        "reason": "Creates owner-only files holding per-install secrets and TLS material; keys, not personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/secrets.py:write_private:6c6f1de445ec4e456a39904dc83940434aca046bbef4034377251210f62c3346": {
+      "path": "src/shift_scheduler/desktop/secrets.py",
+      "symbol": "write_private",
+      "line": 62,
+      "expression_hash": "6c6f1de445ec4e456a39904dc83940434aca046bbef4034377251210f62c3346",
+      "call": "os.fdopen",
+      "status": "UNVERIFIED",
+      "policy": "owner-only-key-material",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "6c6f1de445ec4e456a39904dc83940434aca046bbef4034377251210f62c3346",
+        "reason": "Creates owner-only files holding per-install secrets and TLS material; keys, not personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
+    },
+    "src/shift_scheduler/desktop/secrets.py:write_private:cb49df58d02df597b6b2a14918cc205e6fc71ffac8b5617b04699e05c73c1397": {
+      "path": "src/shift_scheduler/desktop/secrets.py",
+      "symbol": "write_private",
+      "line": 63,
+      "expression_hash": "cb49df58d02df597b6b2a14918cc205e6fc71ffac8b5617b04699e05c73c1397",
+      "call": "handle.write",
+      "status": "UNVERIFIED",
+      "policy": "owner-only-key-material",
+      "classification": "NON_PERSONAL",
+      "classification_evidence": {
+        "expression_hash": "cb49df58d02df597b6b2a14918cc205e6fc71ffac8b5617b04699e05c73c1397",
+        "reason": "Creates owner-only files holding per-install secrets and TLS material; keys, not personal data.",
+        "basis": "source_expression_and_enclosing_function_review"
+      },
+      "handler_status": "UNVERIFIED"
     }
   }
 }
