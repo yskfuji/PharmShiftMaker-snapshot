@@ -95,7 +95,16 @@ def test_children_are_recorded_watched_and_stopped(tmp_path: Path) -> None:
 
 def test_command_of_reports_full_command_lines() -> None:
     if sys.platform == "win32":
-        assert launcher._command_of(os.getpid()) is None
+        # The executable path stands in for the command line on Windows.
+        image = launcher._command_of(os.getpid())
+        assert image is not None
+        assert os.path.normcase(image) == os.path.normcase(sys.executable)
+        import subprocess
+
+        child = subprocess.Popen(_py("import time; time.sleep(30)"))
+        child.kill()
+        child.wait()
+        assert launcher._command_of(child.pid) is None
         return
     marker = "x" * 120  # longer than the 80 columns ps uses when piped
     import subprocess
@@ -786,8 +795,9 @@ def test_runtime_marker_ignores_case_only_on_windows(
     monkeypatch: pytest.MonkeyPatch,
 ) -> None:
     runtime = RuntimeLayout(Path("/Apps/PharmShiftMaker/resources/runtime"))
-    image = "/apps/pharmshiftmaker/RESOURCES/runtime/python/python.exe"
+    image = os.path.join(str(runtime.root).swapcase(), "python", "python.exe")
+    monkeypatch.setattr(launcher.sys, "platform", "darwin")
     assert not launcher._belongs_to(image, runtime)
     monkeypatch.setattr(launcher.sys, "platform", "win32")
     assert launcher._belongs_to(image, runtime)
-    assert not launcher._belongs_to("/other/python.exe", runtime)
+    assert not launcher._belongs_to(os.path.join("other", "python.exe"), runtime)
