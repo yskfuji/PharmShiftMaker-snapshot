@@ -751,3 +751,43 @@ def test_launcher_process_exits_with_its_code_while_stdin_is_open(
     assert code == 2, err
     errors = [e for e in map(json.loads, out.splitlines()) if e["event"] == "error"]
     assert errors[0]["stage"] == "data"
+
+
+def test_windows_directories_get_the_private_folder_treatment(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    from shift_scheduler.ops import platform_fs
+
+    prepared: list[str] = []
+    real = platform_fs.prepare_data_dir
+
+    def record(path: str) -> str:
+        prepared.append(path)
+        return real(path)
+
+    monkeypatch.setattr(launcher.sys, "platform", "win32")
+    monkeypatch.setattr(platform_fs, "prepare_data_dir", record)
+    data = DataLayout(tmp_path / "data")
+    launcher.prepare_directories(data)
+    # Every directory, the managed storage included, is prepared on its own.
+    assert prepared == [str(directory) for directory in data.directories()]
+    assert all(directory.is_dir() for directory in data.directories())
+
+    def refuse(path: str) -> str:
+        raise RuntimeError("Desktop managed storage must be on this PC, not a share")
+
+    monkeypatch.setattr(platform_fs, "prepare_data_dir", refuse)
+    with pytest.raises(launcher.LaunchError, match="not a share") as raised:
+        launcher.prepare_directories(data)
+    assert raised.value.stage == "data"
+
+
+def test_runtime_marker_ignores_case_only_on_windows(
+    monkeypatch: pytest.MonkeyPatch,
+) -> None:
+    runtime = RuntimeLayout(Path("/Apps/PharmShiftMaker/resources/runtime"))
+    image = "/apps/pharmshiftmaker/RESOURCES/runtime/python/python.exe"
+    assert not launcher._belongs_to(image, runtime)
+    monkeypatch.setattr(launcher.sys, "platform", "win32")
+    assert launcher._belongs_to(image, runtime)
+    assert not launcher._belongs_to("/other/python.exe", runtime)

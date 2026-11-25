@@ -70,10 +70,9 @@ pip_install=("$PY" -I -m pip install --disable-pip-version-check --no-input --on
 if [ "$KIND" = mac ]; then
   "${pip_install[@]}" --require-hashes -r "$ROOT/requirements.lock"
 else
-  # requirements.lock carries no Windows hashes yet (M3 adds a Windows lock); until
-  # then the same pinned versions are installed by version, and uvloop (POSIX only) is skipped.
-  grep -E '^[A-Za-z0-9_.-]+(\[[^]]*\])?==' "$ROOT/requirements.lock" | sed -E 's/ .*//' | grep -v '^uvloop==' > "$WORK/pins.txt"
-  "${pip_install[@]}" -r "$WORK/pins.txt"
+  # Same versions as requirements.lock, without uvloop (POSIX only) and with
+  # colorama (Windows only); tests/test_windows_lock.py keeps the two in step.
+  "${pip_install[@]}" --require-hashes -r "$ROOT/desktop/requirements-windows.lock"
 fi
 cp -R "$ROOT/src/shift_scheduler" "$SITE/shift_scheduler"
 find "$SITE/shift_scheduler" -name __pycache__ -type d -prune -exec rm -rf {} +
