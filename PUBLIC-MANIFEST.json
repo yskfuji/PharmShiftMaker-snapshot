@@ -1,5 +1,5 @@
 {
-  "file_count": 2049,
+  "file_count": 2050,
   "files": [
     {
       "bytes": 279,
@@ -42,9 +42,9 @@
       "sha256": "7f68bf4a3db2b788e17bd8fc63f3610bd133f9970df719f2f641875ac7718720"
     },
     {
-      "bytes": 9936,
+      "bytes": 9977,
       "path": ".github/workflows/ci.yml",
-      "sha256": "48be042bbde64fa141942071ae06b8f73c61b4b47d080213a7ab1093dbbad9ab"
+      "sha256": "19e66b576ed2458647064b64fc67b7adc45b2419718005b42fb4cf54949fc09e"
     },
     {
       "bytes": 14726,
@@ -255,6 +255,11 @@
       "bytes": 48,
       "path": "desktop/.gitignore",
       "sha256": "6af1487679755a574f5384753be152711c9ee926dfb448a84756da02b360948d"
+    },
+    {
+      "bytes": 101,
+      "path": "desktop/licenses/.gitattributes",
+      "sha256": "4dd00dbe8cb0e2ab5f52d0c548c76061fe73333a0eb91b446197549f6927d577"
     },
     {
       "bytes": 3663,
@@ -10249,5 +10254,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "3b65393f5559ea5b69c9d92048305a77f7d98b061212faa45e56570106cacd84",
-  "source_commit": "b0cbbcc45cbaa50b07d631ef12d5287538cb0cbd"
+  "source_commit": "f978336eb318574ab21652c5c3d992268cc14d4e"
 }
