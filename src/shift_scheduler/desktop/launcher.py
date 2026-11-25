@@ -11,6 +11,7 @@ stdout. ``setup_token`` is sent only while no local account exists.
 
 from __future__ import annotations
 
+import contextlib
 import json
 import os
 import shutil
@@ -37,6 +38,8 @@ READY_SECONDS = 120.0
 STEP_SECONDS = 600.0
 RENEW_DAYS = 30
 PG_CHECK_SECONDS = 5.0
+LOCK_SECONDS = 60.0
+CONNECT_SECONDS = 10
 
 POSTGRES_CONF = f"""
 # PharmShiftMaker desktop
@@ -242,13 +245,14 @@ def reap_previous(data: DataLayout, runtime: RuntimeLayout) -> list[int]:
             continue
         try:
             os.kill(pid, signal.SIGTERM)
-        except ProcessLookupError:
+        except (ProcessLookupError, PermissionError):
             continue
         deadline = time.monotonic() + STOP_SECONDS
         while time.monotonic() < deadline and _command_of(pid) is not None:
             time.sleep(0.2)
         if _command_of(pid) is not None:
-            os.kill(pid, signal.SIGKILL)
+            with contextlib.suppress(ProcessLookupError, PermissionError):
+                os.kill(pid, signal.SIGKILL)
         stopped.append(pid)
     data.children.unlink(missing_ok=True)
     return stopped
@@ -298,7 +302,7 @@ def init_cluster(sup: Supervisor, secret: Mapping[str, str]) -> None:
                 "UTF8",
                 "--locale=C",
             ],
-            environment.postgres(os.environ, secret),
+            environment.postgres(os.environ),
             data.root,
         )
     finally:
@@ -309,9 +313,9 @@ def init_cluster(sup: Supervisor, secret: Mapping[str, str]) -> None:
     os.replace(data.pgdata_new, data.pgdata)
 
 
-def start_postgres(sup: Supervisor, secret: Mapping[str, str]) -> None:
+def start_postgres(sup: Supervisor) -> None:
     pg_ctl = sup.runtime.pg("pg_ctl")
-    env = environment.postgres(os.environ, secret)
+    env = environment.postgres(os.environ)
     if pg_running(sup):
         # Left over from a crashed session: restart under our supervision.
         sup.run(
@@ -331,7 +335,7 @@ def start_postgres(sup: Supervisor, secret: Mapping[str, str]) -> None:
     )
 
 
-def stop_postgres(sup: Supervisor, secret: Mapping[str, str]) -> None:
+def stop_postgres(sup: Supervisor) -> None:
     if sup.data.pgdata.exists() and pg_running(sup):
         sup.run(
             "pg_stop",
@@ -344,7 +348,7 @@ def stop_postgres(sup: Supervisor, secret: Mapping[str, str]) -> None:
                 "-w",
                 "stop",
             ],
-            environment.postgres(os.environ, secret),
+            environment.postgres(os.environ),
             sup.data.root,
             interruptible=False,
         )
@@ -360,6 +364,7 @@ def _connect(user: str, password: str, database: str) -> Any:
         password=password,
         dbname=database,
         require_auth=environment.REQUIRE_AUTH,
+        connect_timeout=CONNECT_SECONDS,
         autocommit=True,
     )
 
@@ -445,10 +450,19 @@ def wait_tls(sup: Supervisor, port: int, context: ssl.SSLContext, child: Child) 
     _wait(sup, child, probe)
 
 
+def direct_opener(context: ssl.SSLContext) -> urllib.request.OpenerDirector:
+    """HTTPS to our own loopback servers; never through a system or env proxy."""
+    return urllib.request.build_opener(
+        urllib.request.ProxyHandler({}), urllib.request.HTTPSHandler(context=context)
+    )
+
+
 def wait_http(sup: Supervisor, url: str, context: ssl.SSLContext, child: Child) -> None:
+    opener = direct_opener(context)
+
     def probe() -> bool:
         try:
-            with urllib.request.urlopen(url, context=context, timeout=5) as response:
+            with opener.open(url, timeout=5) as response:
                 return bool(response.status < 500)
         except urllib.error.HTTPError as error:
             return bool(error.code < 500)
@@ -587,23 +601,75 @@ def _start_services(
     wait_http(sup, layout.WEB_ORIGIN + "/login", context, web)
 
 
+def acquire_lock(data: DataLayout, stop: threading.Event) -> IO[bytes]:
+    """Hold an exclusive lock on the data folder for the launcher's lifetime.
+
+    A second launcher on the same folder would otherwise reap the first one's
+    children and stop its PostgreSQL. A launcher that is still cleaning up after
+    its shell died releases the lock within about STOP_SECONDS per child, so we
+    wait for a while before giving up.
+    """
+    handle = open_lock(data)
+    deadline = time.monotonic() + LOCK_SECONDS
+    while True:
+        try:
+            if sys.platform == "win32":
+                import msvcrt
+
+                msvcrt.locking(handle.fileno(), msvcrt.LK_NBLCK, 1)
+            else:
+                import fcntl
+
+                fcntl.flock(handle.fileno(), fcntl.LOCK_EX | fcntl.LOCK_NB)
+            return handle
+        except OSError:
+            if time.monotonic() > deadline:
+                handle.close()
+                raise LaunchError(
+                    "data", "another PharmShiftMaker is using this data folder"
+                ) from None
+        if stop.wait(0.2):
+            handle.close()
+            raise Stopped()
+
+
+def open_lock(data: DataLayout) -> IO[bytes]:
+    fd = os.open(
+        data.lock, os.O_RDWR | os.O_CREAT | getattr(os, "O_NOFOLLOW", 0), 0o600
+    )
+    return os.fdopen(fd, "r+b")
+
+
+def require_secrets_for_existing_cluster(data: DataLayout) -> None:
+    """Refuse to mint new secrets for a database that was created with others."""
+    if not data.secrets.exists() and data.pgdata.exists():
+        raise LaunchError(
+            "data",
+            f"{data.secrets} is missing but {data.pgdata} exists; "
+            "restore the whole data folder from the same backup",
+        )
+
+
 def launch(data: DataLayout, runtime: RuntimeLayout, stop: threading.Event) -> int:
     sup = Supervisor(data, runtime, stop)
     secret: Mapping[str, str] | None = None
+    lock: IO[bytes] | None = None
     try:
         emit("stage", stage="data")
         prepare_directories(data)
+        lock = acquire_lock(data, stop)
         reap_previous(data, runtime)
+        require_secrets_for_existing_cluster(data)
         secret = secrets.load_or_create(data.secrets)
         ensure_tls(data)
         # A PostgreSQL left running by a launcher that was killed holds its port.
-        stop_postgres(sup, secret)
+        stop_postgres(sup)
         ports_free()
         sup.check()
 
         emit("stage", stage="database")
         init_cluster(sup, secret)
-        start_postgres(sup, secret)
+        start_postgres(sup)
         ensure_databases(secret)
         sup.check()
 
@@ -652,12 +718,21 @@ def launch(data: DataLayout, runtime: RuntimeLayout, stop: threading.Event) -> i
         )
         return 2
     finally:
-        sup.stop_children()
-        if secret is not None:
+        # Without the lock, another launcher owns the children and PostgreSQL.
+        if lock is not None:
+            sup.stop_children()
             try:
-                stop_postgres(sup, secret)
+                stop_postgres(sup)
             except LaunchError as error:
                 emit("error", stage=error.stage, message=str(error), log=str(error.log))
+            except OSError as error:  # e.g. a damaged runtime without pg_ctl
+                emit(
+                    "error",
+                    stage="postgres",
+                    message=f"{type(error).__name__}: {error}",
+                    log=None,
+                )
+            lock.close()
 
 
 def _watch_stdin(stop: threading.Event) -> None:

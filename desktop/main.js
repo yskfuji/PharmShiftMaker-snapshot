@@ -163,14 +163,19 @@ function onReady(event) {
 }
 
 function start() {
-  Menu.setApplicationMenu(null);
+  // macOS delivers Cmd+C/V/X/A and Cmd+Q through the menu's roles, so keep a
+  // minimal one there (no reload or developer tools). Elsewhere, no menu.
+  Menu.setApplicationMenu(
+    process.platform === 'darwin' ? Menu.buildFromTemplate([{ role: 'appMenu' }, { role: 'editMenu' }]) : null,
+  );
   createWindow();
   const runtime = runtimeDir();
   if (!runtime || !fs.existsSync(pythonPath(runtime))) {
     fail('同梱の実行環境が見つかりません。インストールし直してください。');
     return;
   }
-  const args = ['-I', '-m', 'shift_scheduler.desktop', runtime];
+  // -B: never write __pycache__ into the signed application bundle.
+  const args = ['-I', '-B', '-m', 'shift_scheduler.desktop', runtime];
   if (process.env.PSM_DATA_DIR) args.push(process.env.PSM_DATA_DIR);
   const logPath = path.join(app.getPath('logs'), 'launcher.log');
   fs.mkdirSync(path.dirname(logPath), { recursive: true });

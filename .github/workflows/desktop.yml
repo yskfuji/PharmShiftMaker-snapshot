@@ -8,6 +8,12 @@ on:
       - "src/shift_scheduler/desktop/**"
       - "src/shift_scheduler/config/desktop.py"
       - "frontend/next.config.js"
+      - "frontend/package.json"
+      - "frontend/package-lock.json"
+      - "frontend/src/**"
+      - "src/shift_scheduler/api/**"
+      - "alembic/**"
+      - "scripts/control_authority.py"
       - "requirements.lock"
       - ".github/workflows/desktop.yml"
   push:
@@ -44,7 +50,7 @@ jobs:
       - name: Runtime smoke test (synthetic data, two launches)
         run: |
           mkdir -p results
-          desktop/build/runtime/python/bin/python3 -I desktop/scripts/smoke.py \
+          desktop/build/runtime/python/bin/python3 -I -B desktop/scripts/smoke.py \
             "$PWD/desktop/build/runtime" "$RUNNER_TEMP/psm-data" results/runtime-smoke.json
       - name: Package the app (ad-hoc signature)
         working-directory: desktop
@@ -98,6 +104,10 @@ jobs:
           package-manager-cache: false
       - name: Assemble the bundled runtime
         run: bash desktop/scripts/assemble-runtime.sh
+      # Install before any signing secret exists, so no package script sees one.
+      - name: Install the shell's build tools
+        working-directory: desktop
+        run: npm ci --no-audit --no-fund
       - name: Build, sign and notarize
         working-directory: desktop
         env:
@@ -112,8 +122,7 @@ jobs:
           export APPLE_API_KEY="$RUNNER_TEMP/AuthKey.p8"
           trap 'rm -f "$APPLE_API_KEY"' EXIT
           printf '%s' "$APPLE_API_KEY_P8_BASE64" | base64 --decode > "$APPLE_API_KEY"
-          npm ci --no-audit --no-fund
-          npx electron-builder --mac --publish never -c.mac.notarize=true
+          npx --no-install electron-builder --mac --publish never -c.mac.notarize=true
       - name: Verify signature, notarization and Gatekeeper
         working-directory: desktop
         run: |
@@ -126,7 +135,7 @@ jobs:
         run: |
           mkdir -p results
           app=desktop/dist/mac-arm64/PharmShiftMaker.app
-          "$app/Contents/Resources/runtime/python/bin/python3" -I desktop/scripts/smoke.py \
+          "$app/Contents/Resources/runtime/python/bin/python3" -I -B desktop/scripts/smoke.py \
             "$PWD/$app/Contents/Resources/runtime" "$RUNNER_TEMP/psm-signed" results/signed-runtime-smoke.json
           PSM_DATA_DIR="$RUNNER_TEMP/psm-signed" PSM_SMOKE_RESULT="$PWD/results/signed-app-smoke.json" \
             "$app/Contents/MacOS/PharmShiftMaker"

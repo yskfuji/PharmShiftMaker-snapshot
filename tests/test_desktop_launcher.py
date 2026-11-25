@@ -108,10 +108,11 @@ def test_children_do_not_inherit_unlisted_variables(tmp_path: Path) -> None:
         environment.application(parent, secret, data, "t"),
         environment.control(parent, secret, data),
         environment.web(parent, data),
-        environment.postgres(parent, secret),
+        environment.postgres(parent),
     ):
         assert "AWS_SECRET_ACCESS_KEY" not in env
         assert env["PATH"] == "/bin"
+    assert "PGPASSWORD" not in environment.postgres(parent)
     assert environment.application(parent, secret, data, "t")["DATABASE_URL"] != "other"
 
 

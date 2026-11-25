@@ -44,7 +44,9 @@ def call(
     headers: dict[str, str] | None = None,
 ) -> tuple[int, dict[str, str], str]:
     opener = urllib.request.build_opener(
-        urllib.request.HTTPSHandler(context=context), NoRedirect
+        urllib.request.ProxyHandler({}),
+        urllib.request.HTTPSHandler(context=context),
+        NoRedirect,
     )
     data = json.dumps(body).encode() if body is not None else None
     request = urllib.request.Request(ORIGIN + path, data=data, headers=headers or {})
@@ -63,6 +65,7 @@ def start(runtime: Path, data: Path) -> tuple[subprocess.Popen[bytes], dict[str,
         [
             str(python_of(runtime)),
             "-I",
+            "-B",
             "-m",
             "shift_scheduler.desktop",
             str(runtime),
@@ -177,7 +180,7 @@ def main() -> int:
         and checks["bootstrap_with_token"] in (200, 201)
         and checks["login"] == 200
         and checks["cookie_secure_httponly"]
-        and checks["listen_hosts"] in (["127.0.0.1"], [])
+        and checks["listen_hosts"] == ["127.0.0.1"]
         and checks["first_exit"] == 0
         and checks["ports_closed_after_stop"]
         and checks["setup_status_second"] is True

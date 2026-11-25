@@ -79,6 +79,11 @@ class DataLayout:
         return self.root / "pgdata.new"
 
     @property
+    def lock(self) -> Path:
+        """Held exclusively by the running launcher (see launcher.acquire_lock)."""
+        return self.state / "launcher.lock"
+
+    @property
     def children(self) -> Path:
         """PIDs of the previous session's children, for recovery after a crash."""
         return self.state / "children.json"

@@ -281,6 +281,7 @@ def _run_launch(
 
     defaults: dict[str, Any] = {
         "prepare_directories": record("prepare"),
+        "acquire_lock": record("lock", io.BytesIO()),
         "reap_previous": record("reap", []),
         "ensure_tls": record("tls"),
         "stop_postgres": record("stop_pg"),
@@ -311,8 +312,9 @@ def test_launch_runs_the_stages_in_order_and_offers_setup_once(
 ) -> None:
     code, events, calls = _run_launch(tmp_path, monkeypatch)
     assert code == 0
-    assert calls[:10] == [
+    assert calls[:11] == [
         "prepare",
+        "lock",
         "reap",
         "secrets",
         "tls",
@@ -409,19 +411,16 @@ def _fake_pg_ctl(runtime: RuntimeLayout, state: Path) -> Path:
 def test_postgres_start_restarts_leftovers_and_stop_is_idempotent(
     tmp_path: Path,
 ) -> None:
-    from shift_scheduler.desktop import secrets
-
     sup = _sup(tmp_path)
     flag = tmp_path / "pg-up"
     actions = _fake_pg_ctl(sup.runtime, flag)
     sup.data.pgdata.mkdir()
-    secret = secrets.generate()
     flag.write_text("up")  # a server left by a crashed launcher
-    launcher.start_postgres(sup, secret)
+    launcher.start_postgres(sup)
     assert actions.read_text().split() == ["status", "stop", "start"]
     assert launcher.pg_running(sup)
-    launcher.stop_postgres(sup, secret)
-    launcher.stop_postgres(sup, secret)
+    launcher.stop_postgres(sup)
+    launcher.stop_postgres(sup)
     assert actions.read_text().split()[-3:] == ["status", "stop", "status"]
     assert not flag.exists()
 
@@ -515,6 +514,7 @@ def test_connect_requires_scram(monkeypatch: pytest.MonkeyPatch) -> None:
     monkeypatch.setattr(psycopg, "connect", lambda **kwargs: seen.update(kwargs))
     launcher._connect("u", "p", "d")
     assert seen["require_auth"] == "scram-sha-256"
+    assert seen["connect_timeout"] == launcher.CONNECT_SECONDS
     assert seen["host"] == layout.HOST and seen["port"] == layout.DB_PORT
 
 
@@ -586,3 +586,168 @@ def test_enroll_source_registers_the_source_node(
         ("init", layout.CONTROL_URL, environment.OPERATOR),
         ("POST", "/nodes", {"node_id": environment.SOURCE_NODE, "role": "source"}),
     ]
+
+
+def test_a_second_launcher_waits_for_the_lock_then_refuses(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    data = DataLayout(tmp_path / "data")
+    launcher.prepare_directories(data)
+    monkeypatch.setattr(launcher, "LOCK_SECONDS", 0.3)
+    first = launcher.acquire_lock(data, threading.Event())
+    try:
+        with pytest.raises(launcher.LaunchError, match="another PharmShiftMaker"):
+            launcher.acquire_lock(data, threading.Event())
+        stop = threading.Event()
+        stop.set()
+        monkeypatch.setattr(launcher, "LOCK_SECONDS", 30.0)
+        with pytest.raises(launcher.Stopped):
+            launcher.acquire_lock(data, stop)
+    finally:
+        first.close()
+    launcher.acquire_lock(data, threading.Event()).close()
+
+
+def test_launch_without_the_lock_leaves_the_running_launcher_alone(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    data = DataLayout(tmp_path / "data")
+    real_prepare, real_lock = launcher.prepare_directories, launcher.acquire_lock
+    real_prepare(data)
+    data.children.write_text("[12345]")
+    monkeypatch.setattr(launcher, "LOCK_SECONDS", 0.3)
+    held = launcher.acquire_lock(data, threading.Event())
+    try:
+        code, events, calls = _run_launch(
+            tmp_path,
+            monkeypatch,
+            stop_after=10.0,
+            prepare_directories=real_prepare,
+            acquire_lock=real_lock,
+        )
+    finally:
+        held.close()
+    assert code == 2 and events[-1]["stage"] == "data"
+    assert "reap" not in calls and "stop_pg" not in calls
+    assert data.children.read_text() == "[12345]"
+
+
+def test_missing_secrets_for_an_existing_cluster_are_not_regenerated(
+    tmp_path: Path,
+) -> None:
+    data = DataLayout(tmp_path / "data")
+    launcher.prepare_directories(data)
+    launcher.require_secrets_for_existing_cluster(data)  # first run: fine
+    data.pgdata.mkdir()
+    with pytest.raises(launcher.LaunchError, match="restore the whole data folder"):
+        launcher.require_secrets_for_existing_cluster(data)
+    data.secrets.write_text("{}")
+    launcher.require_secrets_for_existing_cluster(data)
+
+
+def test_readiness_probe_never_uses_a_proxy(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    import http.server
+    import ssl
+    import urllib.error
+    import urllib.request
+
+    class Ok(http.server.BaseHTTPRequestHandler):
+        def do_GET(self) -> None:
+            self.send_response(200)
+            self.end_headers()
+
+        def log_message(self, *_args: Any) -> None:
+            pass
+
+    with socket.socket() as spare:
+        spare.bind(("127.0.0.1", 0))
+        dead = spare.getsockname()[1]
+    for name in ("http_proxy", "https_proxy", "HTTP_PROXY", "HTTPS_PROXY"):
+        monkeypatch.setenv(name, f"http://127.0.0.1:{dead}")
+    for name in ("no_proxy", "NO_PROXY"):
+        monkeypatch.delenv(name, raising=False)
+    server = http.server.HTTPServer(("127.0.0.1", 0), Ok)
+    threading.Thread(target=server.serve_forever, daemon=True).start()
+    url = f"http://127.0.0.1:{server.server_address[1]}/healthz"
+    try:
+        with pytest.raises(urllib.error.URLError):
+            urllib.request.urlopen(url, timeout=5)  # the default opener obeys the proxy
+        sup = _sup(tmp_path)
+        monkeypatch.setattr(launcher, "READY_SECONDS", 5.0)
+        child = launcher.Child("api", _FakeProcess(), sup.data.logs / "api.log")  # type: ignore[arg-type]
+        launcher.wait_http(sup, url, ssl.create_default_context(), child)
+    finally:
+        server.shutdown()
+        server.server_close()
+
+
+@posix_only
+def test_reap_previous_tolerates_processes_it_may_not_or_can_no_longer_signal(
+    tmp_path: Path, monkeypatch: pytest.MonkeyPatch
+) -> None:
+    runtime = RuntimeLayout(tmp_path / "rt")
+    data = DataLayout(tmp_path / "data")
+    data.state.mkdir(parents=True)
+    monkeypatch.setattr(launcher, "_command_of", lambda _pid: f"x {runtime.root} y")
+    monkeypatch.setattr(launcher, "STOP_SECONDS", 0.2)
+
+    def denied(_pid: int, _sig: int) -> None:
+        raise PermissionError
+
+    data.children.write_text("[4242]")
+    monkeypatch.setattr(launcher.os, "kill", denied)
+    assert launcher.reap_previous(data, runtime) == []
+
+    sent: list[int] = []
+
+    def gone_before_sigkill(_pid: int, sig: int) -> None:
+        sent.append(sig)
+        if len(sent) > 1:
+            raise ProcessLookupError
+
+    data.children.write_text("[4242]")
+    monkeypatch.setattr(launcher.os, "kill", gone_before_sigkill)
+    assert launcher.reap_previous(data, runtime) == [4242]
+    assert not data.children.exists()
+
+
+def test_launcher_process_exits_with_its_code_while_stdin_is_open(
+    tmp_path: Path,
+) -> None:
+    import subprocess
+
+    data = DataLayout(tmp_path / "data")
+    launcher.prepare_directories(data)
+    data.pgdata.mkdir()  # no secrets: the launcher refuses at the data stage
+    source = Path(launcher.__file__).resolve().parents[2]
+    process = subprocess.Popen(
+        [
+            sys.executable,
+            "-B",
+            "-m",
+            "shift_scheduler.desktop",
+            str(tmp_path / "rt"),
+            str(data.root),
+        ],
+        stdin=subprocess.PIPE,
+        stdout=subprocess.PIPE,
+        stderr=subprocess.PIPE,
+        env={**os.environ, "PYTHONPATH": str(source)},
+    )
+    assert process.stdin and process.stdout and process.stderr
+    try:
+        # stdin stays open, as it does under the shell.
+        out = process.stdout.read()
+        code = process.wait(60)
+        err = process.stderr.read()
+    finally:
+        if process.poll() is None:
+            process.kill()
+        process.stdin.close()
+        process.stdout.close()
+        process.stderr.close()
+    assert code == 2, err
+    errors = [e for e in map(json.loads, out.splitlines()) if e["event"] == "error"]
+    assert errors[0]["stage"] == "data"

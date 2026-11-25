@@ -60,10 +60,12 @@ def credentials(secret: Mapping[str, str]) -> dict[str, dict[str, str]]:
     }
 
 
-def postgres(parent: Mapping[str, str], secret: Mapping[str, str]) -> dict[str, str]:
+def postgres(parent: Mapping[str, str]) -> dict[str, str]:
+    """For initdb and pg_ctl only. initdb reads the password from --pwfile and
+    pg_ctl never connects, so no password is put where the postmaster inherits it.
+    """
     env = _base(parent)
     env.update(
-        PGPASSWORD=secret["admin_db_password"],
         PGUSER=layout.ADMIN_USER,
         PGREQUIREAUTH=REQUIRE_AUTH,
         PGHOST=layout.HOST,
