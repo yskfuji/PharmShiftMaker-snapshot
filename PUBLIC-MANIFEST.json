@@ -47,9 +47,9 @@
       "sha256": "48be042bbde64fa141942071ae06b8f73c61b4b47d080213a7ab1093dbbad9ab"
     },
     {
-      "bytes": 11982,
+      "bytes": 13348,
       "path": ".github/workflows/desktop.yml",
-      "sha256": "1f46fb66b47d75e3a219da5d281ae465804f1255a4dbdba427de2064e830aec2"
+      "sha256": "7ff0e6da9d36007163838f4171ce75f2ff51ca0494e60e49fa45b0182a6f5f4e"
     },
     {
       "bytes": 1689,
@@ -287,9 +287,9 @@
       "sha256": "d808fd926d17c889b89092bc723183ad7634b1e92c2e1a2f5c3fda931d74ff7b"
     },
     {
-      "bytes": 5624,
+      "bytes": 7226,
       "path": "desktop/scripts/assemble-runtime.sh",
-      "sha256": "8d3d5cc7fc55a3e383922cf42a3c0765036f8769768cdb42f1d5f60c3c37c4b3"
+      "sha256": "75e7f8b04484e81290b8888c97de57ab459079ebd286e448c3666af7404e8057"
     },
     {
       "bytes": 6857,
@@ -9382,9 +9382,9 @@
       "sha256": "5f1bfc9a3f14ae7704998bf7f9e918b0f8bfa2deb3b0c4466ae5f47d4d5e5958"
     },
     {
-      "bytes": 28690,
+      "bytes": 29140,
       "path": "tests/test_desktop_launcher_process.py",
-      "sha256": "a38e419d3ceae5f75a9d282fceed401c9b6968c52293c39693a6ae1676f891bc"
+      "sha256": "01b551b746682aaead6ea57ac44c7854e5bb866490557cad1bc262a7d08a5e8d"
     },
     {
       "bytes": 26686,
@@ -10064,5 +10064,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "3b65393f5559ea5b69c9d92048305a77f7d98b061212faa45e56570106cacd84",
-  "source_commit": "fb706436963d861c6ec955651a5cf60fc4dc6dbe"
+  "source_commit": "2f8133e7b4885950f8bbf7c9bcc030ca4372e614"
 }
