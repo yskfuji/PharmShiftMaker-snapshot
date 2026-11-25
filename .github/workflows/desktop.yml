@@ -107,6 +107,24 @@ jobs:
           desktop/build/runtime/python/python.exe -I -B desktop/scripts/smoke.py \
             "$(cygpath -w "$PWD/desktop/build/runtime")" "$(cygpath -w "$RUNNER_TEMP/psm-data")" \
             results/runtime-smoke.json
+      - name: The bundled Visual C++ runtime is the one loaded
+        # The runner has the Redistributable installed system-wide, so a missing
+        # app-local copy would go unnoticed; check where the DLLs are loaded from.
+        shell: pwsh
+        run: |
+          $runtime = (Resolve-Path desktop\build\runtime).Path
+          $py = Start-Process -PassThru -NoNewWindow -FilePath "$runtime\python\python.exe" `
+            -ArgumentList '-I', '-B', '-c', '"import ortools.sat.python.cp_model, time; time.sleep(30)"'
+          Start-Sleep -Seconds 15
+          $mods = (Get-Process -Id $py.Id).Modules | Where-Object { $_.ModuleName -match '^(msvcp140|vcruntime140)' }
+          $mods | Format-Table ModuleName, FileName -AutoSize | Out-String | Tee-Object -FilePath results\vc-runtime.txt
+          Stop-Process -Id $py.Id
+          if (-not ($mods | Where-Object { $_.ModuleName -ieq 'msvcp140.dll' })) { throw "msvcp140.dll was not loaded" }
+          $outside = $mods | Where-Object { -not $_.FileName.StartsWith($runtime, [StringComparison]::OrdinalIgnoreCase) }
+          if ($outside) { throw "loaded from outside the bundle: $($outside.FileName -join ', ')" }
+          foreach ($dll in 'msvcp140.dll', 'vcruntime140.dll', 'vcruntime140_1.dll') {
+            if (-not (Test-Path "$runtime\pg\bin\$dll")) { throw "pg\bin\$dll is missing" }
+          }
       - name: Data folder is restricted to this user, SYSTEM and Administrators
         shell: pwsh
         run: |
