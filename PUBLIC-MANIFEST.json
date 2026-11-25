@@ -1,5 +1,5 @@
 {
-  "file_count": 2007,
+  "file_count": 1987,
   "files": [
     {
       "bytes": 279,
@@ -42,14 +42,9 @@
       "sha256": "7f68bf4a3db2b788e17bd8fc63f3610bd133f9970df719f2f641875ac7718720"
     },
     {
-      "bytes": 7624,
+      "bytes": 9964,
       "path": ".github/workflows/ci.yml",
-      "sha256": "e754143db3678e0a79e3ee08f085a65c381fb804e690691bfc94fc14d5f908ef"
-    },
-    {
-      "bytes": 6342,
-      "path": ".github/workflows/desktop.yml",
-      "sha256": "90b32f8d66f411190a8ee95c5d88156cc877d13e1a81731092955adc65fd7d37"
+      "sha256": "e2496db0224a5f94ec82a44fa9821c5895b33e583f71047498f9c1e94905b8a1"
     },
     {
       "bytes": 1689,
@@ -250,56 +245,6 @@
       "bytes": 2773,
       "path": "certs/README.md",
       "sha256": "f4ba8f2bd6d1a47aa9d2440777809a2f078f9e31ba6f00c49f8b9914f462afea"
-    },
-    {
-      "bytes": 48,
-      "path": "desktop/.gitignore",
-      "sha256": "6af1487679755a574f5384753be152711c9ee926dfb448a84756da02b360948d"
-    },
-    {
-      "bytes": 8117,
-      "path": "desktop/main.js",
-      "sha256": "b33f331417c3e46e231300de2d391275e12bbfcff33eda8fa0f052d31a345b21"
-    },
-    {
-      "bytes": 127151,
-      "path": "desktop/package-lock.json",
-      "sha256": "624812ccd8f674ef15d7b668ea8026ca47136ae1f15c13d2e1faf1965cc6b849"
-    },
-    {
-      "bytes": 2243,
-      "path": "desktop/package.json",
-      "sha256": "cba8534eee7f2dfb96f1ba9edea45a5c2c261afd59f7476ff76df324d67bb830"
-    },
-    {
-      "bytes": 464,
-      "path": "desktop/resources/entitlements.mac.plist",
-      "sha256": "4c415e23ac8dc338a7c3213b074645f42361af9d493b372420709e235b899211"
-    },
-    {
-      "bytes": 153493,
-      "path": "desktop/resources/icon.png",
-      "sha256": "d808fd926d17c889b89092bc723183ad7634b1e92c2e1a2f5c3fda931d74ff7b"
-    },
-    {
-      "bytes": 5735,
-      "path": "desktop/scripts/assemble-runtime.sh",
-      "sha256": "8104811f89723ba63101bb90c36f398d2d0907ca154c07cb782a03cbb985cd7e"
-    },
-    {
-      "bytes": 6795,
-      "path": "desktop/scripts/smoke.py",
-      "sha256": "e706c53f1039c8f68b598e76e32790988d2275115190c026656fdccd25bc96d2"
-    },
-    {
-      "bytes": 516,
-      "path": "desktop/splash.html",
-      "sha256": "46f0258bb4eca31e293f5cb96a81a6193829658439198355a901c4bbafba052b"
-    },
-    {
-      "bytes": 1830,
-      "path": "desktop/web/desktop-server.cjs",
-      "sha256": "e0287af68a1880d4e37e0622b0f3d328cd1e21b11bff66defe3f4027558f7d4f"
     },
     {
       "bytes": 85,
@@ -517,9 +462,9 @@
       "sha256": "d0c11bc78593d710f08f1755ca28f1f4a86e1265639d638e9fad40781f75542b"
     },
     {
-      "bytes": 23378,
+      "bytes": 23103,
       "path": "docs/architecture/er/ia-map.md",
-      "sha256": "afd77515149df0d288b2f956c4eeaaf5eaa76f269bc9acae8e52db84816642f1"
+      "sha256": "af7c31002d81c7955eea76a77eb9ae590249a76672d5aa1bb581245b120b0133"
     },
     {
       "bytes": 4737,
@@ -584,7 +529,7 @@
     {
       "bytes": 8967,
       "path": "docs/architecture/navigation.md",
-      "sha256": "a4327fa55c790916aeaa9084cc00e676a833e04779b12a5bafdf1f6323783e4f"
+      "sha256": "a916b0fa8582bc4aee610994b738c7bffb763297c75421271c5005ee95d50f27"
     },
     {
       "bytes": 1080,
@@ -647,19 +592,14 @@
       "sha256": "1584a802cd162fbdbd9d42fe648ff78b06b86707d9864a0257b213d9191e686b"
     },
     {
-      "bytes": 10674,
-      "path": "docs/desktop/desktop-shell.md",
-      "sha256": "c3f8d654168ea10303254d9c0667d099d3cfacc331e1d19c5486dc259af42870"
-    },
-    {
       "bytes": 6047,
       "path": "docs/desktop/m0-verification.md",
       "sha256": "31026bd3ca2dba8dabfe7292d0cf5f0e2c88e01c09fc9c46a0c3c6cefe7d6733"
     },
     {
-      "bytes": 4840,
-      "path": "docs/desktop/macos-signing.md",
-      "sha256": "af6618c95f1f5f7690c73ffb7682d07ffe90fce272339b965f944fd97e4dff0c"
+      "bytes": 16216,
+      "path": "docs/desktop/windows-storage.md",
+      "sha256": "cd5dd324776e5511459e74b6313eb49377d93c4d21b496f2f4c6c4e072ae62ba"
     },
     {
       "bytes": 8530,
@@ -2577,9 +2517,9 @@
       "sha256": "1862ac4bbbc5192d4bf562161df66ea547ed3e67173100656ab606ae9797db2b"
     },
     {
-      "bytes": 1326,
+      "bytes": 1159,
       "path": "frontend/next.config.js",
-      "sha256": "8e2df60ce51428d722895157caa8fcfb06cee68f9d9fb408d7774920689d0122"
+      "sha256": "8afcdecaccf4f290c86390d42d5e4a92fbd7b57f807ebe420364db2ffcc44ab4"
     },
     {
       "bytes": 499258,
@@ -2972,9 +2912,9 @@
       "sha256": "a13e210e7b8712474147da52868d95de7d556319a4f2816593ccfb8ee13b1b4a"
     },
     {
-      "bytes": 5733,
+      "bytes": 5653,
       "path": "frontend/src/components/IdentityProvider.tsx",
-      "sha256": "c4450a86e07f7e1c2f081b1d01cdb89ba7b40b73d17f50c499b04ef54b944fb0"
+      "sha256": "e18df9060bd14660c7a74e8d5b219ea9fbfd2ae439b4fcc7578155ccf9ab4287"
     },
     {
       "bytes": 140,
@@ -3077,9 +3017,9 @@
       "sha256": "8aa6589249412f421f7de73aa68be79b48e2fbf32adbd99331cd9ad62cac1be2"
     },
     {
-      "bytes": 9186,
+      "bytes": 8982,
       "path": "frontend/src/components/SessionControls.tsx",
-      "sha256": "12e847a604ab884620ad08d303238bdfdba42611256b492145822a040fd40964"
+      "sha256": "8cca16eb12cfb9b932f5f3188e77d72da6b40384cf2d06ed1acffa2eb36f8b6b"
     },
     {
       "bytes": 158,
@@ -3177,9 +3117,9 @@
       "sha256": "e32458d201b99693bdf4da98b51aaf703bf5896da62a1e4b6a810d2750b579c6"
     },
     {
-      "bytes": 7168,
+      "bytes": 6778,
       "path": "frontend/src/components/__tests__/IdentityProvider.test.tsx",
-      "sha256": "beefc3ccc0acd19369cd8c97fa4c34b489177e31cbd721b3f0bb827cf6b80acc"
+      "sha256": "d8528fabf699d11e4c80ec3f95bb36bf039de6911cf6c931075086cd382bd76a"
     },
     {
       "bytes": 5630,
@@ -3257,9 +3197,9 @@
       "sha256": "0e7185a9c8da0f71611f08859c4f48c740c1b8bc68da035f98a07023ca0dc965"
     },
     {
-      "bytes": 12135,
+      "bytes": 11695,
       "path": "frontend/src/components/__tests__/SessionControls.test.tsx",
-      "sha256": "abc4f82322d8a678877090113a5d0cc62a5ccd8679ece000b7bab460b31d6d79"
+      "sha256": "a87305c62916d71adf91e718e932a74f138648b6d69bd3168bf7fb64b010d96d"
     },
     {
       "bytes": 936,
@@ -3980,11 +3920,6 @@
       "bytes": 1657,
       "path": "frontend/src/lib/scheduleTransformers.ts",
       "sha256": "08d3bd3ae26a2943d0de719bdeaa74489421917be52fbac2eee6b9f9dc93cb0b"
-    },
-    {
-      "bytes": 468,
-      "path": "frontend/src/lib/sessionlessPages.ts",
-      "sha256": "5194102a785f5e9cd2a6eecba897932177510f18029611364afd95e92f8a90ee"
     },
     {
       "bytes": 1641,
@@ -8327,9 +8262,9 @@
       "sha256": "de6ed5ae7e5074140dd1d8343a90eba20559892e24dc505d74af2441e0f99e4f"
     },
     {
-      "bytes": 31574,
+      "bytes": 31703,
       "path": "src/shift_scheduler/application/copies.py",
-      "sha256": "c72bcda3aa1df3b6d1066f49af70f2e9fc1217e4c70ea44071fa09697b36ebf5"
+      "sha256": "841b732dac0e702639efb2b84130b1e52e2c3635e6019d3ea12383a9e214b5c6"
     },
     {
       "bytes": 2980,
@@ -8407,9 +8342,9 @@
       "sha256": "5df568dfe0669ddc607e94f8d28facd7705d0b3f1366fd59586d994401127786"
     },
     {
-      "bytes": 7660,
+      "bytes": 7757,
       "path": "src/shift_scheduler/application/publication_artifacts.py",
-      "sha256": "15693b99387ddec2ea3274dc5ebdcc73312a45a3140a6c7d7d02debe0cf9411c"
+      "sha256": "43a52470dcd3b552ecb70f9bf85849dd1a940d6fe69c2c6ccd2fc996fa352525"
     },
     {
       "bytes": 6268,
@@ -8442,9 +8377,9 @@
       "sha256": "27d97d94e61d849d06509e5ad6e4dbae7b73e4f75c1ed00d43d95816fba3dc2e"
     },
     {
-      "bytes": 251419,
+      "bytes": 238083,
       "path": "src/shift_scheduler/application/storage_routes.json",
-      "sha256": "5fa843dbd947f445872674d071193a97c6036861036a446589d99a78bc2add45"
+      "sha256": "e09aecee43122995e69ff1d2f4d3ab3262621629d53ff141f7bfda223ac50c91"
     },
     {
       "bytes": 5618,
@@ -8497,9 +8432,9 @@
       "sha256": "213a6d1e6af2c203cbfa0bb704a840633c9031e8d0827d35d0754337bc3a92c9"
     },
     {
-      "bytes": 7450,
+      "bytes": 7720,
       "path": "src/shift_scheduler/config/desktop.py",
-      "sha256": "e201d65d09d9876e0e98c8fad008d1bd125c55f2fc4c79ee5d107346633dc10b"
+      "sha256": "1af69185168ea9219d000b806477dcd3dbea38a1afedba957ff5399088c16f4c"
     },
     {
       "bytes": 712,
@@ -8697,41 +8632,6 @@
       "sha256": "dc6b9a0623fe1c5e5109cb2f65ed1d08e924c8fe4fd6677b78b3b37ebb5cce27"
     },
     {
-      "bytes": 357,
-      "path": "src/shift_scheduler/desktop/__init__.py",
-      "sha256": "2ebee53c390442cc0c35a0f8c2144781f7838c75ea74af405e3a37968d30c07b"
-    },
-    {
-      "bytes": 76,
-      "path": "src/shift_scheduler/desktop/__main__.py",
-      "sha256": "b8f8fd7da6bfabc0789d2db9f423030c926870af21abbee07620632989d91077"
-    },
-    {
-      "bytes": 4432,
-      "path": "src/shift_scheduler/desktop/environment.py",
-      "sha256": "bc8ddfee00203ef9fe6a9437c16fbf5ac454a5739a7641fb1ab680c9ccf38477"
-    },
-    {
-      "bytes": 21921,
-      "path": "src/shift_scheduler/desktop/launcher.py",
-      "sha256": "a7476e79d35ebb706a96083c82ba97d1957fd4f31f8bb2053da4a89819ef7cb4"
-    },
-    {
-      "bytes": 3541,
-      "path": "src/shift_scheduler/desktop/layout.py",
-      "sha256": "cce55ccb56a48fe356b5f3f3750e4c98d11dc0536762eedb02950a6305bfbc2f"
-    },
-    {
-      "bytes": 3073,
-      "path": "src/shift_scheduler/desktop/secrets.py",
-      "sha256": "967e3d6e310f51190f2f6b6aca2d53434439636aa97f2027221b5c45672baa38"
-    },
-    {
-      "bytes": 4337,
-      "path": "src/shift_scheduler/desktop/tls.py",
-      "sha256": "80d274a9c1307446c112911c96f8cd1228dd94ecf05db1c7ca2d1e8a84701a5a"
-    },
-    {
       "bytes": 763,
       "path": "src/shift_scheduler/domain/__init__.py",
       "sha256": "f2dcec12c1ec6f21fb12acab7918a46ac8d2457d221d267beb0aac57af289ef5"
@@ -8817,9 +8717,9 @@
       "sha256": "0c5bc1615ce8fa4c172c3a65be781d90921be22e8abf438a371ec5b50811ce69"
     },
     {
-      "bytes": 29127,
+      "bytes": 29344,
       "path": "src/shift_scheduler/ops/archive.py",
-      "sha256": "0e7f861cb2f8b6e8a5f57afeba0dd70a9adb305d9badff5079d725b655150e3d"
+      "sha256": "c713cadae6152f9925e3d5908c0bb81a24d12bbe941b18b8b8eb849d0def365d"
     },
     {
       "bytes": 26433,
@@ -8827,9 +8727,9 @@
       "sha256": "66032d57109236603f2fb2bbbb85f9c8e83f173d7c516f59f111e5fd21a578db"
     },
     {
-      "bytes": 4444,
+      "bytes": 4641,
       "path": "src/shift_scheduler/ops/erasure_control.py",
-      "sha256": "24a108d99f04764f080c5279dc873ae414acb3850aee16266743cfcbbbd9ea98"
+      "sha256": "6d8f0170dea17cea0407d05fce528a9e8a2226238e1256e553bfb6cd651c687c"
     },
     {
       "bytes": 19717,
@@ -8847,14 +8747,19 @@
       "sha256": "5757ca2a883a9de0d6b11eca626462ea3d416f6f083b0019ce105279bd464ba3"
     },
     {
-      "bytes": 2753,
+      "bytes": 2997,
       "path": "src/shift_scheduler/ops/managed_erasure.py",
-      "sha256": "86efdee62cd886b0b87688dfcbf81cf829b78d76d851db8593a28b2088323644"
+      "sha256": "b9f1dcab7f20a711c69badf43069176c30f159d94a03d2c52f45c7bc209e5f8c"
     },
     {
-      "bytes": 21497,
+      "bytes": 21780,
       "path": "src/shift_scheduler/ops/managed_writer.py",
-      "sha256": "fd8807a951059b6c94eb8ee0bb06371d7409c5468d28ce6d8d657843ae189263"
+      "sha256": "92d108bad4f37cdd050b566fb21447c30ca80b4e0d2bbd0b654f7179a9b33d3f"
+    },
+    {
+      "bytes": 29744,
+      "path": "src/shift_scheduler/ops/platform_fs.py",
+      "sha256": "182444db7b5febb5e056d61f77545d99b69434a67f616189ba2e7dae4d06c082"
     },
     {
       "bytes": 119,
@@ -9362,19 +9267,9 @@
       "sha256": "59f0c27e9d743c35853ae9b4e499a3a2f1e29cc8f5ca69ec9f313fcc6d9477c6"
     },
     {
-      "bytes": 10140,
-      "path": "tests/test_desktop_launcher.py",
-      "sha256": "9063b999c3640f71e799980cf3c13318233ce8966dd3124dd555cbeff2753ce9"
-    },
-    {
-      "bytes": 21216,
-      "path": "tests/test_desktop_launcher_process.py",
-      "sha256": "ee5f55a61ef79856b7ef44927da4bcb97c71697dd079eed99040838704103b34"
-    },
-    {
-      "bytes": 26337,
+      "bytes": 26686,
       "path": "tests/test_desktop_local_auth.py",
-      "sha256": "10c5a130478964611ef7b6975fc40e45edd659f30f4fb9ba38f0218d4124d8e8"
+      "sha256": "d9453ef8369a026343c8d275fde4d1b2ea88bc87c3ed70eac0ec5f0d8adc2a18"
     },
     {
       "bytes": 6815,
@@ -9732,6 +9627,11 @@
       "sha256": "82f756b2842377a5456bb3a594039d5bea75a217754ea20e2a8c2b3ebe26ba4d"
     },
     {
+      "bytes": 23347,
+      "path": "tests/test_platform_fs.py",
+      "sha256": "008cc52f9b152593348acd5f95064370143a53b183604daff02faea36cec037e"
+    },
+    {
       "bytes": 5365,
       "path": "tests/test_privacy_workflow.py",
       "sha256": "31d8748fb687d9730382f4ac4de29a418af01c0eb492407367149bab1128f69c"
@@ -10039,5 +9939,5 @@
   ],
   "format": "PharmShiftMaker public tree manifest v1",
   "policy_sha256": "3b65393f5559ea5b69c9d92048305a77f7d98b061212faa45e56570106cacd84",
-  "source_commit": "759f3d9839d330784bb2720e195d73a8083a0fd1"
+  "source_commit": "89548a267689de659dc75bf6cf3e5ff9185b6e08"
 }
